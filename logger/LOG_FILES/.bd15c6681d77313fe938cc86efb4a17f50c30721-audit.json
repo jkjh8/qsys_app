@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 30
+    },
+    "auditLog": "/home/tdps/qsys/logger/LOG_FILES/.bd15c6681d77313fe938cc86efb4a17f50c30721-audit.json",
+    "files": [
+        {
+            "date": 1710806705502,
+            "name": "/home/tdps/qsys/logger/LOG_FILES/2024-03-19.exception.log",
+            "hash": "650eed06e7b8e41ff266c69703a1655416ac10b6051592bd1754a44216534470"
+        }
+    ],
+    "hashType": "sha256"
+}

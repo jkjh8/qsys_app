@@ -1,0 +1,15 @@
+{
+  "presets": ["@babel/env"],
+  "plugins": [
+    "transform-node-env-inline",
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "@": "./",
+          "@models": "./db/models"
+        }
+      }
+    ]
+  ]
+}
