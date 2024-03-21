@@ -1,11 +1,11 @@
-import winston from 'winston'
-import wd from 'winston-daily-rotate-file'
-import path from 'node:path'
+const winston = require('winston')
+const wd = require('winston-daily-rotate-file')
+const path = require('node:path')
 
 // initialize functions
 const { combine, timestamp, label, printf } = winston.format
 // path
-const logpath = path.resolve(__dirname, 'LOG_FILES')
+const logpath = path.join('/home', 'tdps', 'LOG_FILES')
 
 const logformat = printf(({ level, message, timestamp }) => {
   return `${timestamp} ${level} ${message}`
@@ -43,4 +43,4 @@ if (process.env.NODE_ENV !== 'production') {
   )
 }
 
-export default logger
+module.exports = logger

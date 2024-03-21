@@ -1,8 +1,8 @@
-import { EventEmitter } from 'events'
-import net from 'net'
+const EventEmitter = require('events').EventEmitter
+const net = require('net')
 // import { removeQsys } from '..'
 
-export default class Qrc extends EventEmitter {
+module.exports = class Qrc extends EventEmitter {
   constructor(obj) {
     super()
     this.name = `${obj.name} - ${obj.ipaddress}`

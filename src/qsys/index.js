@@ -1,17 +1,17 @@
-import logger from '@/logger'
-import Qrc from './qrc'
-import { socket } from '../socket'
+const logger = require('@logger')
+const Qrc = require('./qrc')
+const { fnSendSocket } = require('@api/socket')
 
 let qsysObj = {}
 let qsysArr = []
 
-const fnAddQsyses = (devices) => {
+const fnAQs = (devices) => {
   try {
     qsysArr = devices
     devices.forEach((device) => {
       const { deviceId } = device
       if (qsysObj[deviceId] === null || qsysObj[deviceId] === undefined) {
-        fnAddQsys(device)
+        fnAQ(device)
       }
     })
     // 리스트에 없는 경우 삭제
@@ -27,7 +27,7 @@ const fnAddQsyses = (devices) => {
   }
 }
 
-const fnAddQsys = (device) => {
+const fnAQ = (device) => {
   try {
     const { deviceId, name, ipaddress } = device
     // 중복확인
@@ -37,13 +37,13 @@ const fnAddQsys = (device) => {
     // Qsys connect
     qsysObj[deviceId].on('connect', () => {
       qsysObj[deviceId].connected = true
-      socket.emit('qsys:connect', { deviceId, name, ipaddress })
+      fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
       logger.info(`Qsys ${name} ${ipaddress} connected`)
     })
     // Qsys disconnect
     qsysObj[deviceId].on('disconnect', () => {
       qsysObj[deviceId].connected = false
-      socket.emit('qsys:disconnect', { deviceId, name, ipaddress })
+      fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
       qsysReconnect(device)
       logger.info(`Qsys ${name} ${ipaddress} disconnected`)
     })
@@ -71,9 +71,9 @@ const qsysReconnect = (device) => {
   setTimeout(() => {
     const idx = qsysArr.findIndex((e) => e.deviceId === device.deviceId)
     if (idx !== -1) {
-      fnAddQsys(device)
+      fnAQ(device)
     }
-  })
+  }, 5000)
 }
 
-export { qsysObj, qsysArr, fnAddQsyses, fnAddQsys }
+module.exports = { qsysObj, qsysArr, fnAQs, fnAQ }
