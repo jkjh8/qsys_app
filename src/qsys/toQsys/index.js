@@ -21,4 +21,97 @@ const fnSetPaFB = (deviceId, value = true) => {
   }
 }
 
-module.exports = { fnGetQsysStatus, fnSetPaFB }
+const fnGetVnM = (deviceId) => {
+  try {
+    const Controls = []
+    const ZoneStatus =
+      qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
+    for (let item of ZoneStatus) {
+      Controls.push({ Name: `zone.${item.Zone}.gain` })
+      Controls.push({ Name: `zone.${item.Zone}.mute` })
+    }
+    qsys.obj[deviceId].addCommand({
+      id: 3001,
+      method: 'Component.Get',
+      params: { Name: 'PA', Controls }
+    })
+  } catch (error) {
+    logger.error(`Get Volume Mute status error -- ${error}`)
+  }
+}
+
+const fnSetV = (deviceId, zone, value) => {
+  try {
+    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus[
+      zone
+    ].gain = value
+    qsys.obj[deviceId].addCommand({
+      id: 3003,
+      method: 'Component.Set',
+      params: {
+        Name: 'PA',
+        Controls: [{ Name: `zone.${zone}.gain`, Value: value }]
+      }
+    })
+  } catch (error) {
+    logger.error(`Set Volume error -- ${error}`)
+  }
+}
+
+const fnSetM = (deviceId, zone, value) => {
+  try {
+    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus[
+      zone
+    ].mute = value
+    qsys.obj[deviceId].addCommand({
+      id: 3004,
+      method: 'Component.Set',
+      params: {
+        Name: 'PA',
+        Controls: [{ Name: `zone.${zone}.mute`, Value: value }]
+      }
+    })
+  } catch (error) {
+    logger.error(`Set Mute error -- ${error}`)
+  }
+}
+
+const fnSTr = (args) => {
+  const { deviceId, zone, ipaddress } = args
+  qsys.obj[deviceId].addCommand({
+    id: 4001,
+    method: 'Component.Set',
+    params: {
+      Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
+      Controls: [
+        { Name: 'host', Value: ipaddress },
+        { Name: 'port', Value: 4444 }
+      ]
+    }
+  })
+}
+
+const fnGTrs = (deviceId) => {
+  const ZoneStatus =
+    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
+  for (let item of ZoneStatus) {
+    qsys.obj[deviceId].addCommand({
+      id: 4002,
+      method: 'Component.Get',
+      params: {
+        Name: `Media_Stream_Transmitter_MS-TX-${item.Zone}`,
+        Controls: [{ Name: 'host' }]
+      }
+    })
+  }
+}
+
+module.exports = {
+  fnGetQsysStatus,
+  fnSetPaFB,
+  fnGetVnM,
+  fnSetV,
+  fnSetM,
+  fnSTr,
+  fnGTrs
+}

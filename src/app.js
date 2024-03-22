@@ -3,6 +3,7 @@ const logger = require('@logger')
 const { io } = require('socket.io-client')
 const { fnAQs } = require('@qsys/add')
 const qsys = require('./qsys')
+const { fnSetV, fnSetM, fnSTr } = require('@qsys/toQsys')
 let socket
 
 try {
@@ -17,6 +18,30 @@ try {
 
   socket.on('disconnect', () => {
     logger.info('Socket.io disconnected')
+  })
+
+  socket.on('qsys:volume', (obj) => {
+    try {
+      fnSetV(obj.deviceId, obj.zone, obj.value)
+    } catch (error) {
+      logger.error(`Qsys volume update error: ${error}`)
+    }
+  })
+
+  socket.on('qsys:mute', (obj) => {
+    try {
+      fnSetM(obj.deviceId, obj.zone, obj.value)
+    } catch (error) {
+      logger.error(`Qsys Mute update error: ${error}`)
+    }
+  })
+
+  socket.on('qsys:tr', (obj) => {
+    try {
+      fnSTr(obj)
+    } catch (error) {
+      logger.error(`Qsys Set transmitter error: ${error}`)
+    }
   })
 
   socket.on('qsys:devices', (arr) => {

@@ -40,10 +40,9 @@ module.exports = function parser(deviceId, obj, arr) {
         fnSendSocket('qsys:page:cancel', { deviceId })
         break
       case 3001:
-        const vols = result.Conteols
-        const ZoneStatus =
-          qsys.arr[qsys.arr.findIndex((item) => item.deviceId === deviceId)]
-            .ZoneStatus
+        const vols = result.Controls
+        const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+        const ZoneStatus = qsys.arr[idx].ZoneStatus
         for (let val of vols) {
           const channel = Number(val.Name.replace(/[^0-9]/g, ''))
           const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
@@ -54,9 +53,16 @@ module.exports = function parser(deviceId, obj, arr) {
             ZoneStatus[idx].mute = val.Value
           }
         }
+        fnSendSocket('qsys:device', { deviceId, data: { ZoneStatus } })
         break
       case 3003:
       case 3004:
+        break
+      case 4002:
+        const zone = result.Name.replace(/[^0-9]/g, '')
+        const value = result.Controls[0].String
+        console.log(deviceId, zone, value)
+        fnSendSocket('qsys:rttr', { deviceId, zone, value })
         break
     }
   } catch (error) {
