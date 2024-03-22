@@ -27,6 +27,7 @@
     "@logger": "src/logger",
     "@api": "src/api",
     "@qsys": "src/qsys",
-    "@socket": "src/socket"
+    "@socket": "src/socket",
+    "@app": "src/app"
   }
 }

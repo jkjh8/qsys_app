@@ -1,17 +1,5 @@
-const logger = require('@logger')
-
-let socket = null
-
-const fnSendSocket = (addr, value) => {
-  socket.emit(addr, value)
-}
-
-const fnUpdateSocket = (obj) => {
-  socket = obj
-  logger.info('Socket.io updated')
-}
+const app = require('@app')
 
 module.exports = {
-  fnSendSocket,
-  fnUpdateSocket
+  fnSendSocket: (key, value) => app.socket.emit(key, value)
 }
