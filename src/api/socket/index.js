@@ -1,5 +1,5 @@
-const app = require('@app')
+const socket = require('@socket')
 
 module.exports = {
-  fnSendSocket: (key, value) => app.socket.emit(key, value)
+  fnSendSocket: (key, value) => socket.socket.emit(key, value)
 }
