@@ -118,7 +118,7 @@ module.exports = class Qrc extends EventEmitter {
         clearInterval(this.ivCommands)
         this.ivCommands = null
       }
-    }, 500)
+    }, 50)
   }
 
   send(msg) {

@@ -91,18 +91,37 @@ const fnSTr = (args) => {
   })
 }
 
+const fnSTrs = (device) => {
+  const { deviceId, ZoneStatus } = device
+  for (let item of ZoneStatus) {
+    fnSTr({
+      deviceId,
+      zone: item.Zone,
+      ipaddress:
+        item.destination && item.destination.ipaddress
+          ? item.destination.ipaddress
+          : ''
+    })
+  }
+}
+
+const fnGTr = (args) => {
+  const { deviceId, zone } = args
+  qsys.obj[deviceId].addCommand({
+    id: 4002,
+    method: 'Component.Get',
+    params: {
+      Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
+      Controls: [{ Name: 'host' }]
+    }
+  })
+}
+
 const fnGTrs = (deviceId) => {
   const ZoneStatus =
     qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
   for (let item of ZoneStatus) {
-    qsys.obj[deviceId].addCommand({
-      id: 4002,
-      method: 'Component.Get',
-      params: {
-        Name: `Media_Stream_Transmitter_MS-TX-${item.Zone}`,
-        Controls: [{ Name: 'host' }]
-      }
-    })
+    fnGTr({ deviceId, zone: item.Zone })
   }
 }
 
@@ -112,6 +131,8 @@ module.exports = {
   fnGetVnM,
   fnSetV,
   fnSetM,
+  fnSTrs,
   fnSTr,
+  fnGTr,
   fnGTrs
 }

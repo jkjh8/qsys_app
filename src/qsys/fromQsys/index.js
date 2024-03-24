@@ -35,6 +35,5 @@ module.exports = function parser(deviceId, arr) {
         ZoneStatus
       }
     })
-    fnGTrs(deviceId)
   }
 }

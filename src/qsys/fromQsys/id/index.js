@@ -1,10 +1,12 @@
 const qsys = require('@qsys')
 const logger = require('@logger')
 const { fnSendSocket } = require('@api/socket')
+const { fnSTr, fnGTr } = require('@qsys/toQsys')
 
 module.exports = function parser(deviceId, obj, arr) {
   try {
     const { id, result } = obj
+    let ZoneStatus = []
     switch (id) {
       case 1000:
         fnSendSocket('qsys:device', {
@@ -13,16 +15,38 @@ module.exports = function parser(deviceId, obj, arr) {
         })
         break
       case 2000:
-        fnSendSocket('qsys:device', {
-          deviceId,
-          data: {
-            ZoneStatusConfigure: result,
-            channel: arr.length - 1,
-            ZoneStatus:
-              qsys.arr[qsys.arr.findIndex((item) => item.deviceId === deviceId)]
-                .ZoneStatus
-          }
-        })
+        ZoneStatus =
+          qsys.arr[qsys.arr.findIndex((item) => item.deviceId === deviceId)]
+            .ZoneStatus
+        // stream data receive
+        // for (let item of ZoneStatus) {
+        //   fnGTr({
+        //     deviceId,
+        //     zone: item.Zone,
+        //     ipaddress:
+        //       item.destination && item.destination.ipaddress
+        //         ? item.ipaddress
+        //         : null
+        //   })
+        // }
+        // return data
+        if (result) {
+          fnSendSocket('qsys:device', {
+            deviceId,
+            data: {
+              ZoneStatusConfigure: result,
+              channel: arr.length - 1,
+              ZoneStatus
+            }
+          })
+        } else {
+          fnSendSocket('qsys:device', {
+            deviceId,
+            data: {
+              ZoneStatusConfigure: result
+            }
+          })
+        }
         break
       case 2001:
         fnSendSocket('qsys:device', { deviceId, data: { PaConfig: result } })
@@ -42,7 +66,7 @@ module.exports = function parser(deviceId, obj, arr) {
       case 3001:
         const vols = result.Controls
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
-        const ZoneStatus = qsys.arr[idx].ZoneStatus
+        ZoneStatus = qsys.arr[idx].ZoneStatus
         for (let val of vols) {
           const channel = Number(val.Name.replace(/[^0-9]/g, ''))
           const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
