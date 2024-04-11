@@ -5,7 +5,7 @@ const path = require('node:path')
 // initialize functions
 const { combine, timestamp, label, printf } = winston.format
 // path
-const logpath = path.join('/home', 'tdps', 'LOG_FILES')
+const logpath = path.join(require('os').homedir(), 'LOG_FILES')
 
 const logformat = printf(({ level, message, timestamp }) => {
   return `${timestamp} ${level} ${message}`

@@ -2,10 +2,11 @@ const { io } = require('socket.io-client')
 const logger = require('@logger')
 exports.connectIO = () => {
   console.log('start connect')
-  const socket = io.connect('https://localhost:3443/qsys', {
-    secure: true,
+  const socket = io.connect('https://localhost/qsys', {
+    // secure: true,
     withCredentials: true,
     rejectUnauthorized: false,
+    autoConnect: true,
     extraHeaders: {
       auth: 'qsys'
     }
