@@ -1,7 +1,7 @@
 const { io } = require('socket.io-client')
 const logger = require('@logger')
+const { socketParser } = require('./fromSocket')
 exports.connectIO = () => {
-  console.log('start connect')
   const socket = io.connect('https://localhost/qsys', {
     // secure: true,
     withCredentials: true,
@@ -20,11 +20,15 @@ exports.connectIO = () => {
     logger.error('Socket.io connect_error', err)
   })
 
+  socket.on('error', (error) => {
+    logger.error(`Socket.io error: ${error}`)
+  })
+
   socket.on('disconnect', () => {
     logger.info('Socket.io disconnected')
   })
 
-  require('./fromSocket')(socket)
+  socketParser(socket)
 
   //return
   exports.socket = socket

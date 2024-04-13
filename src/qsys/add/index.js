@@ -36,12 +36,15 @@ const fnAQ = async (device) => {
 
     qsys.obj[deviceId].on('connect', () => {
       try {
-        qsys.arr[
-          qsys.arr.findIndex((item) => item.deviceId === deviceId)
-        ].connected = true
-        fnSetPaFB(deviceId)
-        fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
-        logger.info(`Qsys ${name} ${ipaddress} connected`)
+        const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+        if (idx !== -1) {
+          qsys.arr[idx].connected = true
+          fnSetPaFB(deviceId)
+          fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
+          logger.info(`Qsys ${name} ${ipaddress} connected`)
+        } else {
+          logger.warn(`Qsys connect: ${deviceId} is not exists`)
+        }
       } catch (error) {
         logger.error(`Qsys connect error ${error}`)
       }
@@ -49,13 +52,15 @@ const fnAQ = async (device) => {
     // Qsys disconnect
     qsys.obj[deviceId].on('disconnect', () => {
       try {
-        const idx = qsys.arr.findIndex((item) => item.)
-        qsys.arr[
-          qsys.arr.findIndex((item) => item.deviceId === deviceId)
-        ].connected = false
-        fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
-        qsysReconnect(device)
-        logger.info(`Qsys ${name} ${ipaddress} disconnected`)
+        const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+        if (idx !== -1) {
+          qsys.arr[idx].connected = false
+          fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
+          qsysReconnect(device)
+          logger.info(`Qsys ${name} ${ipaddress} disconnected`)
+        } else {
+          logger.warn(`Qsys disconnect: ${deviceId} is not exists`)
+        }
       } catch (error) {
         logger.error(`Qsys disconnect error -- ${error}`)
       }

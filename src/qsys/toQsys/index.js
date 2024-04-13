@@ -124,6 +124,16 @@ const fnGTrs = (deviceId) => {
     fnGTr({ deviceId, zone: item.Zone })
   }
 }
+const fnPACA = (deviceId) => {
+  qsys.obj[deviceId].addCommand({
+    id: 2009,
+    method: 'Component.Set',
+    params: {
+      Name: 'PA',
+      Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
+    }
+  })
+}
 
 module.exports = {
   fnGetQsysStatus,
@@ -134,5 +144,6 @@ module.exports = {
   fnSTrs,
   fnSTr,
   fnGTr,
-  fnGTrs
+  fnGTrs,
+  fnPACA
 }
