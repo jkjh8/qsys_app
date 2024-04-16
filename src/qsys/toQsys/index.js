@@ -43,7 +43,7 @@ const fnGetVnM = (deviceId) => {
 const fnSetV = (deviceId, zone, value) => {
   try {
     qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus[
-      zone
+      zone - 1
     ].gain = value
     qsys.obj[deviceId].addCommand({
       id: 3003,
@@ -61,7 +61,7 @@ const fnSetV = (deviceId, zone, value) => {
 const fnSetM = (deviceId, zone, value) => {
   try {
     qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus[
-      zone
+      zone - 1
     ].mute = value
     qsys.obj[deviceId].addCommand({
       id: 3004,
@@ -125,14 +125,16 @@ const fnGTrs = (deviceId) => {
   }
 }
 const fnPACA = (deviceId) => {
-  qsys.obj[deviceId].addCommand({
-    id: 2009,
-    method: 'Component.Set',
-    params: {
-      Name: 'PA',
-      Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
-    }
-  })
+  if (qsys.obj[deviceId]) {
+    qsys.obj[deviceId].addCommand({
+      id: 2009,
+      method: 'Component.Set',
+      params: {
+        Name: 'PA',
+        Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
+      }
+    })
+  }
 }
 
 module.exports = {

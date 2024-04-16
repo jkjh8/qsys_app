@@ -44,7 +44,7 @@ module.exports = class Qrc extends EventEmitter {
     })
 
     this.client.on('timeout', () => {
-      this.emit('error', `qsys ${this.name} connection timeout`)
+      this.emit('error', `qsys qrc ${this.name} connection timeout`)
     })
 
     this.client.on('error', (err) => {
@@ -70,71 +70,87 @@ module.exports = class Qrc extends EventEmitter {
           this.data = Buffer.alloc(0)
         }
       } catch (err) {
-        this.emit('error', `qsys ${this.name} data receive error -- ${err}`)
+        this.emit('error', `qsys qrc ${this.name} data receive error -- ${err}`)
       }
     })
   }
 
   connect() {
     if (this.connected) {
-      return this.emit('error', `qsys ${this.name} is already connected`)
+      return this.emit('error', `qsys qrc ${this.name} is already connected`)
     }
     try {
       this.client.connect({ port: 1710, host: this.ipaddress })
     } catch (err) {
-      this.emit('error', `qsys ${this.name} connect error -- ${err}`)
+      this.emit('error', `qsys qrc ${this.name} connect error -- ${err}`)
     }
   }
 
   disconnect() {
-    if (this.ivCommands) {
-      clearInterval(this.ivCommands)
-    }
-    if (this.ivConnection) {
-      clearInterval(this.ivConnection)
-    }
-    this.ivCommands = null
-    this.ivConnection = null
+    try {
+      if (this.ivCommands) {
+        clearInterval(this.ivCommands)
+      }
+      if (this.ivConnection) {
+        clearInterval(this.ivConnection)
+      }
+      this.ivCommands = null
+      this.ivConnection = null
 
-    if (this.connected) {
-      this.client.end()
+      if (this.connected) {
+        this.client.end()
+      }
+    } catch (error) {
+      this.emit('error', `qsys qrc disconnect error ${error}`)
     }
   }
 
   addCommand(msg) {
-    this.commands.push(msg)
-    if (!this.ivCommands) {
-      this.commandProcess()
+    try {
+      this.commands.push(msg)
+      if (!this.ivCommands) {
+        this.commandProcess()
+      }
+    } catch (error) {
+      this.emit('error', `qsys qrc add command error ${error}`)
     }
   }
 
   commandProcess() {
-    this.ivCommands = setInterval(() => {
-      if (this.commands.length > 0) {
-        if (this.connected) {
-          this.send(this.commands.shift())
+    try {
+      this.ivCommands = setInterval(() => {
+        if (this.commands.length > 0) {
+          if (this.connected) {
+            this.send(this.commands.shift())
+          }
+        } else {
+          clearInterval(this.ivCommands)
+          this.ivCommands = null
         }
-      } else {
-        clearInterval(this.ivCommands)
-        this.ivCommands = null
-      }
-    }, 50)
+      }, 50)
+    } catch (error) {
+      this.emit('error', `qsys qrc command process error ${error}`)
+    }
   }
 
   send(msg) {
-    if (this.connected) {
-      this.client.write(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          ...msg
-        }) + '\x00'
-      )
-      this.timeout = 60
-    } else {
-      this.emit(
-        'error',
-        `qsys ${this.name} send data failed -- socket not connected command: ${msg}`
-      )
+    try {
+      if (this.connected) {
+        this.client.write(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            ...msg
+          }) + '\x00'
+        )
+        this.timeout = 60
+      } else {
+        this.emit(
+          'error',
+          `qsys qrc ${this.name} send data failed -- socket not connected command: ${msg}`
+        )
+      }
+    } catch (error) {
+      this.emit('error', `qsys qrc send command error ${error}`)
     }
   }
 
@@ -142,7 +158,7 @@ module.exports = class Qrc extends EventEmitter {
     if (this.ivConnection) {
       return this.emit(
         'error',
-        `qsys ${this.name} set connection timeout failed -- timeout interval is alive`
+        `qsys qrc ${this.name} set connection timeout failed -- timeout interval is alive`
       )
     } else {
       try {
@@ -150,7 +166,7 @@ module.exports = class Qrc extends EventEmitter {
           this.timeout = this.timeout - 1
           if (this.timeout < 5) {
             this.addCommand({ method: 'NoOp', params: {} })
-            this.emit('debug', `qsys ${this.name} -- noOp`)
+            this.emit('debug', `qsys qrc ${this.name} -- noOp`)
           }
           // clear interval at disconnected
           if (!this.connected) {
@@ -158,14 +174,14 @@ module.exports = class Qrc extends EventEmitter {
             this.ivConnection = null
             this.emit(
               'error',
-              `qsys ${this.name} clear interval -- socket not connected`
+              `qsys qrc ${this.name} clear interval -- socket not connected`
             )
           }
         }, 1000)
       } catch (error) {
         this.emit(
           'error',
-          `qsys ${this.name} connection check error -- ${this.name}`
+          `qsys qrc ${this.name} connection check error -- ${this.name}`
         )
       }
     }
