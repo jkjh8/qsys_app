@@ -27,6 +27,12 @@ module.exports = function parser(deviceId, obj) {
           ZoneStatus.push(params)
         }
         return true
+      case 'PA.PageStatus':
+        fnSendSocket('qsys:page:status', {
+          deviceId,
+          params
+        })
+        break
     }
   } catch (error) {
     logger.error(`method parser error: ${error}`)

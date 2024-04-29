@@ -88,6 +88,11 @@ module.exports = function parser(deviceId, obj, arr) {
         console.log(deviceId, zone, value)
         fnSendSocket('qsys:rttr', { deviceId, zone, value })
         break
+      default:
+        if (Object.keys(result).includes('PageID')) {
+          fnSendSocket('qsys:page:id', { deviceId, id, PageID: result.PageID })
+        }
+        break
     }
   } catch (error) {
     logger.error(`id parser error: ${error}`)
