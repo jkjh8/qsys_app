@@ -9,7 +9,7 @@ const {
   fnGTrs,
   fnPACA
 } = require('@qsys/toQsys')
-const { fnSetLive } = require('@qsys/broadcast')
+const { fnSetLive, fnPageStop } = require('@qsys/broadcast')
 
 const socketParser = (socket) => {
   socket.on('qsys:devices', (arr) => fnAQs(arr))
@@ -20,6 +20,7 @@ const socketParser = (socket) => {
   socket.on('qsys:device:strs', (obj) => fnSTrs(obj.device))
   socket.on('qsys:page:cancelAll', (deviceId) => fnPACA(deviceId))
   socket.on('qsys:page:live', (arr) => fnSetLive(arr))
+  socket.on('qsys:page:stop', (arr) => fnPageStop(arr))
 }
 
 module.exports = {

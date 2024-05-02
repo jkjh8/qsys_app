@@ -16,6 +16,18 @@ const fnSetLive = (arr) => {
   }
 }
 
+const fnPageStop = (arr) => {
+  for (item of arr) {
+    const { deviceId, idx, PageID } = item
+    qsys.obj[deviceId].addCommand({
+      id: idx,
+      method: 'PA.PageStop',
+      params: { PageID }
+    })
+  }
+}
+
 module.exports = {
-  fnSetLive
+  fnSetLive,
+  fnPageStop
 }
