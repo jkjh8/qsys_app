@@ -90,7 +90,11 @@ module.exports = function parser(deviceId, obj, arr) {
         break
       default:
         if (Object.keys(result).includes('PageID')) {
-          fnSendSocket('qsys:page:id', { deviceId, id, PageID: result.PageID })
+          fnSendSocket('qsys:page:id', {
+            deviceId,
+            idx: id,
+            PageID: result.PageID
+          })
         }
         break
     }

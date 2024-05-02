@@ -70,7 +70,10 @@ module.exports = class Qrc extends EventEmitter {
           this.data = Buffer.alloc(0)
         }
       } catch (err) {
-        this.emit('error', `qsys qrc ${this.name} data receive error -- ${err}`)
+        this.emit(
+          'error',
+          `qsys qrc ${this.name} data receive error -- ${(err, data)}`
+        )
       }
     })
   }
@@ -127,7 +130,7 @@ module.exports = class Qrc extends EventEmitter {
           clearInterval(this.ivCommands)
           this.ivCommands = null
         }
-      }, 50)
+      }, 100)
     } catch (error) {
       this.emit('error', `qsys qrc command process error ${error}`)
     }
