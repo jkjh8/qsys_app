@@ -126,6 +126,7 @@ const fnGTrs = (deviceId) => {
 }
 const fnPACA = (deviceId) => {
   if (qsys.obj[deviceId]) {
+    fnSetPaFB(deviceId, false)
     qsys.obj[deviceId].addCommand({
       id: 2009,
       method: 'Component.Set',
@@ -134,6 +135,7 @@ const fnPACA = (deviceId) => {
         Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
       }
     })
+    fnSetPaFB(deviceId, true)
   }
 }
 
