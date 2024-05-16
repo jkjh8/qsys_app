@@ -89,6 +89,7 @@ module.exports = function parser(deviceId, obj, arr) {
         fnSendSocket('qsys:rttr', { deviceId, zone, value })
         break
       default:
+        console.log('byID', deviceId, obj, arr)
         if (Object.keys(result).includes('PageID')) {
           fnSendSocket('qsys:page:id', {
             deviceId,

@@ -8,7 +8,7 @@ module.exports = (deviceId, obj) => {
       //
       break
     default:
-      //
+      console.log('byError', deviceId, obj)
       break
   }
   logger.error(`from Qsys Error ${deviceId} ${JSON.stringify(obj)}`)

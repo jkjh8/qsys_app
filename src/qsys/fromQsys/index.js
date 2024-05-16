@@ -5,7 +5,7 @@ const { fnGetVnM, fnGTrs } = require('@qsys/toQsys')
 module.exports = function parser(deviceId, arr) {
   let statusData = false
   for (let obj of arr) {
-    console.log(obj)
+    // console.log(obj)
     // error
     if (Object.keys(obj).includes('error')) {
       return require('./error')(deviceId, obj)

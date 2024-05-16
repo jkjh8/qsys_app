@@ -33,6 +33,9 @@ module.exports = function parser(deviceId, obj) {
           params
         })
         break
+      default:
+        console.log('byMethod', deviceId, obj)
+        break
     }
   } catch (error) {
     logger.error(`method parser error: ${error}`)
