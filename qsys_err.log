@@ -1,9 +1,0 @@
-2024-05-04T00:18:28: TypeError: fnSetMessage is not a function
-2024-05-04T00:18:28:     at Socket.<anonymous> (C:\Users\21h\Desktop\dev\qsys_app\src\socket\fromSocket\index.js:23:43)
-2024-05-04T00:18:28:     at Emitter.emit (C:\Users\21h\Desktop\dev\qsys_app\node_modules\@socket.io\component-emitter\index.js:143:20)
-2024-05-04T00:18:28:     at Socket.emitEvent (C:\Users\21h\Desktop\dev\qsys_app\node_modules\socket.io-client\build\cjs\socket.js:559:20)
-2024-05-04T00:18:28:     at Socket.onevent (C:\Users\21h\Desktop\dev\qsys_app\node_modules\socket.io-client\build\cjs\socket.js:546:18)
-2024-05-04T00:18:28:     at Socket.onpacket (C:\Users\21h\Desktop\dev\qsys_app\node_modules\socket.io-client\build\cjs\socket.js:514:22)
-2024-05-04T00:18:28:     at Emitter.emit (C:\Users\21h\Desktop\dev\qsys_app\node_modules\@socket.io\component-emitter\index.js:143:20)
-2024-05-04T00:18:28:     at C:\Users\21h\Desktop\dev\qsys_app\node_modules\socket.io-client\build\cjs\manager.js:237:18
-2024-05-04T00:18:28:     at process.processTicksAndRejections (node:internal/process/task_queues:81:21)
