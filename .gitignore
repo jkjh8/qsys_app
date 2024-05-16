@@ -18,3 +18,4 @@ qsys_out.log*
 # local .env files
 .env.local*
 .env
+.log
