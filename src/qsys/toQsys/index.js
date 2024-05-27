@@ -40,6 +40,28 @@ const fnGetVnMs = (deviceId) => {
   }
 }
 
+const fnSetVnMs = (deviceId) => {
+  try {
+    const Controls = []
+    const ZoneStatus =
+      qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
+    for (let item of ZoneStatus) {
+      Controls.push({ Name: `zone.${item.Zone}.gain`, Value: item.gain })
+      Controls.push({
+        Name: `zone.${item.Zone}.mute`,
+        Value: item.mute
+      })
+    }
+    qsys.obj[deviceId].addCommand({
+      id: 3003,
+      method: 'Component.Set',
+      params: { Name: 'PA', Controls }
+    })
+  } catch (error) {
+    logger.error(`Set Volumes Mutes error -- ${error}`)
+  }
+}
+
 const fnGetVnM = (deviceId, zone) => {
   try {
     const Controls = []
@@ -92,7 +114,6 @@ const fnSetM = (deviceId, zone, value) => {
 }
 
 const fnSTr = (args) => {
-  console.log('fnstr', args)
   const { deviceId, zone, ipaddress } = args
   qsys.obj[deviceId].addCommand({
     id: 4001,
@@ -107,8 +128,9 @@ const fnSTr = (args) => {
   })
 }
 
-const fnSTrs = (device) => {
-  const { deviceId, ZoneStatus } = device
+const fnSTrs = (deviceId) => {
+  const ZoneStatus =
+    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
   for (let item of ZoneStatus) {
     fnSTr({
       deviceId,
@@ -158,6 +180,7 @@ module.exports = {
   fnGetQsysStatus,
   fnSetPaFB,
   fnGetVnMs,
+  fnSetVnMs,
   fnGetVnM,
   fnSetV,
   fnSetM,

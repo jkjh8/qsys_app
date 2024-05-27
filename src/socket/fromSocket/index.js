@@ -4,6 +4,7 @@ const { fnAQs } = require('@qsys/add')
 const {
   fnSTr,
   fnGetVnM,
+  fnSetVnMs,
   fnSetV,
   fnSetM,
   fnSTrs,
@@ -11,6 +12,7 @@ const {
   fnGTr,
   fnPACA
 } = require('@qsys/toQsys')
+
 const {
   fnSetLive,
   fnSetMessage,
@@ -42,6 +44,10 @@ const socketParser = (socket) => {
         ipaddress: obj.destination.ipaddress
       })
     }
+  })
+  socket.on('zone:set:device', (deviceId) => {
+    fnSetVnMs(deviceId)
+    fnSTrs(deviceId)
   })
 }
 

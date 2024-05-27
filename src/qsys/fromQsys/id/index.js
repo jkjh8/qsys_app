@@ -81,6 +81,7 @@ module.exports = function parser(deviceId, obj, arr) {
         break
       case 3003:
       case 3004:
+      case 4001:
         break
       case 4002:
         console.log(4002)
@@ -88,6 +89,8 @@ module.exports = function parser(deviceId, obj, arr) {
         const value = result.Controls[0].String
         console.log(deviceId, zone, value)
         fnSendSocket('qsys:rttr', { deviceId, zone, value })
+        break
+      case 4004:
         break
       default:
         console.log('byID', deviceId, obj, arr)
