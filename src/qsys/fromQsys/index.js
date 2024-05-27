@@ -1,7 +1,7 @@
 const logger = require('@logger')
 const qsys = require('@qsys')
 const { fnSendSocket } = require('@api/socket')
-const { fnGetVnM, fnGTrs } = require('@qsys/toQsys')
+const { fnGetVnMs, fnGTrs } = require('@qsys/toQsys')
 module.exports = function parser(deviceId, arr) {
   let statusData = false
   for (let obj of arr) {
@@ -26,7 +26,7 @@ module.exports = function parser(deviceId, arr) {
       qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
     for (let item of ZoneStatus) {
       if (!item.hasOwnProperty('gain')) {
-        return fnGetVnM(deviceId)
+        return fnGetVnMs(deviceId)
       }
     }
     fnSendSocket('qsys:device', {

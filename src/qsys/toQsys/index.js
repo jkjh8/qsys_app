@@ -21,7 +21,7 @@ const fnSetPaFB = (deviceId, value = true) => {
   }
 }
 
-const fnGetVnM = (deviceId) => {
+const fnGetVnMs = (deviceId) => {
   try {
     const Controls = []
     const ZoneStatus =
@@ -30,6 +30,21 @@ const fnGetVnM = (deviceId) => {
       Controls.push({ Name: `zone.${item.Zone}.gain` })
       Controls.push({ Name: `zone.${item.Zone}.mute` })
     }
+    qsys.obj[deviceId].addCommand({
+      id: 3001,
+      method: 'Component.Get',
+      params: { Name: 'PA', Controls }
+    })
+  } catch (error) {
+    logger.error(`Get Volumes Mutes status error -- ${error}`)
+  }
+}
+
+const fnGetVnM = (deviceId, zone) => {
+  try {
+    const Controls = []
+    Controls.push({ Name: `zone.${zone}.gain` })
+    Controls.push({ Name: `zone.${zone}.mute` })
     qsys.obj[deviceId].addCommand({
       id: 3001,
       method: 'Component.Get',
@@ -142,6 +157,7 @@ const fnPACA = (deviceId) => {
 module.exports = {
   fnGetQsysStatus,
   fnSetPaFB,
+  fnGetVnMs,
   fnGetVnM,
   fnSetV,
   fnSetM,
