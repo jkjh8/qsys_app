@@ -3,10 +3,12 @@ const qsys = require('@qsys')
 const { fnAQs } = require('@qsys/add')
 const {
   fnSTr,
+  fnGetVnM,
   fnSetV,
   fnSetM,
   fnSTrs,
   fnGTrs,
+  fnGTr,
   fnPACA
 } = require('@qsys/toQsys')
 const {
@@ -30,6 +32,17 @@ const socketParser = (socket) => {
   socket.on('qsys:page:stop', (arr) => fnPageStop(arr))
   socket.on('qsys:page:sstop', (obj) => fnPageSingleStop(obj))
   socket.on('qsys:page:cancel', (obj) => fnPageCancel(obj))
+  socket.on('zone:set:channel', (obj) => {
+    fnSetV(obj.deviceId, obj.Zone, obj.gain)
+    fnSetM(obj.deviceId, obj.Zone, obj.mute)
+    if (obj.destination) {
+      fnSTr({
+        deviceId: obj.deviceId,
+        zone: obj.Zone,
+        ipaddress: obj.destination.ipaddress
+      })
+    }
+  })
 }
 
 module.exports = {

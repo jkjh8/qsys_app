@@ -83,6 +83,7 @@ module.exports = function parser(deviceId, obj, arr) {
       case 3004:
         break
       case 4002:
+        console.log(4002)
         const zone = result.Name.replace(/[^0-9]/g, '')
         const value = result.Controls[0].String
         console.log(deviceId, zone, value)

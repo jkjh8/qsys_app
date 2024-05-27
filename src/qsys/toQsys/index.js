@@ -92,6 +92,7 @@ const fnSetM = (deviceId, zone, value) => {
 }
 
 const fnSTr = (args) => {
+  console.log('fnstr', args)
   const { deviceId, zone, ipaddress } = args
   qsys.obj[deviceId].addCommand({
     id: 4001,
@@ -120,8 +121,7 @@ const fnSTrs = (device) => {
   }
 }
 
-const fnGTr = (args) => {
-  const { deviceId, zone } = args
+const fnGTr = (deviceId, zone) => {
   qsys.obj[deviceId].addCommand({
     id: 4002,
     method: 'Component.Get',
