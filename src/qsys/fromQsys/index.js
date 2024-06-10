@@ -1,11 +1,11 @@
 const logger = require('@logger')
 const qsys = require('@qsys')
 const { fnSendSocket } = require('@api/socket')
-const { fnGetVnMs, fnGTrs } = require('@qsys/toQsys')
+const { fnGetVolumeMutes, fnGetTransmitters } = require('@qsys/toQsys')
+
 module.exports = function parser(deviceId, arr) {
   let statusData = false
   for (let obj of arr) {
-    // console.log(obj)
     // error
     if (Object.keys(obj).includes('error')) {
       return require('./error')(deviceId, obj)
@@ -22,18 +22,18 @@ module.exports = function parser(deviceId, arr) {
     }
   }
   if (statusData) {
-    const ZoneStatus =
-      qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
-    for (let item of ZoneStatus) {
-      if (!item.hasOwnProperty('gain')) {
-        return fnGetVnMs(deviceId)
+    const ZoneStatus = qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus
+    if (ZoneStatus) {
+      const hasGain = ZoneStatus.some((item) => item.hasOwnProperty('gain'))
+      if (!hasGain) {
+        return fnGetVolumeMutes(deviceId)
       }
+      fnSendSocket('qsys:device', {
+        deviceId,
+        data: {
+          ZoneStatus
+        }
+      })
     }
-    fnSendSocket('qsys:device', {
-      deviceId,
-      data: {
-        ZoneStatus
-      }
-    })
   }
 }

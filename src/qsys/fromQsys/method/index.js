@@ -13,16 +13,14 @@ module.exports = function parser(deviceId, obj) {
         })
         break
       case 'PA.ZoneStatus':
-        const ZoneStatus =
-          qsys.arr[qsys.arr.findIndex((item) => item.deviceId === deviceId)]
-            .ZoneStatus
+        const ZoneStatus = qsys.arr.find(
+          (item) => item.deviceId === deviceId
+        )?.ZoneStatus
         const zoneIdx = ZoneStatus.findIndex(
           (item) => item.Zone === params.Zone
         )
         if (zoneIdx !== -1) {
-          for (let key in params) {
-            ZoneStatus[zoneIdx][key] = params[key]
-          }
+          Object.assign(ZoneStatus[zoneIdx], params)
         } else {
           ZoneStatus.push(params)
         }

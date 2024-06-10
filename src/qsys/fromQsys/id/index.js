@@ -1,7 +1,7 @@
 const qsys = require('@qsys')
 const logger = require('@logger')
 const { fnSendSocket } = require('@api/socket')
-const { fnSTr, fnGTr } = require('@qsys/toQsys')
+const { fnSetTransmitter, fnGetTransmitter } = require('@qsys/toQsys')
 
 module.exports = function parser(deviceId, obj, arr) {
   try {
@@ -15,27 +15,15 @@ module.exports = function parser(deviceId, obj, arr) {
         })
         break
       case 2000:
-        ZoneStatus =
-          qsys.arr[qsys.arr.findIndex((item) => item.deviceId === deviceId)]
-            .ZoneStatus
-        // stream data receive
-        // for (let item of ZoneStatus) {
-        //   fnGTr({
-        //     deviceId,
-        //     zone: item.Zone,
-        //     ipaddress:
-        //       item.destination && item.destination.ipaddress
-        //         ? item.ipaddress
-        //         : null
-        //   })
-        // }
-        // return data
         if (result) {
+          const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+          const ZoneStatus = qsys.arr[idx].ZoneStatus
+          const channel = arr.length - 1
           fnSendSocket('qsys:device', {
             deviceId,
             data: {
               ZoneStatusConfigure: result,
-              channel: arr.length - 1,
+              channel,
               ZoneStatus
             }
           })
@@ -66,17 +54,21 @@ module.exports = function parser(deviceId, obj, arr) {
       case 3001:
         const vols = result.Controls
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
-        ZoneStatus = qsys.arr[idx].ZoneStatus
+        const ZoneStatus = qsys.arr[idx].ZoneStatus
+
         for (let val of vols) {
           const channel = Number(val.Name.replace(/[^0-9]/g, ''))
           const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
+
           if (val.Name.includes('gain')) {
             ZoneStatus[idx].gain = val.Value
           }
+
           if (val.Name.includes('mute')) {
             ZoneStatus[idx].mute = val.Value
           }
         }
+
         fnSendSocket('qsys:device', { deviceId, data: { ZoneStatus } })
         break
       case 3003:
@@ -84,10 +76,8 @@ module.exports = function parser(deviceId, obj, arr) {
       case 4001:
         break
       case 4002:
-        console.log(4002)
         const zone = result.Name.replace(/[^0-9]/g, '')
         const value = result.Controls[0].String
-        console.log(deviceId, zone, value)
         fnSendSocket('qsys:rttr', { deviceId, zone, value })
         break
       case 4004:

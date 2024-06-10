@@ -1,26 +1,27 @@
 const logger = require('@logger')
 const Qrc = require('../qrc')
 const { fnSendSocket } = require('@api/socket')
-const { fnSetPaFB } = require('@qsys/toQsys')
+const { fnSetPaFeedback } = require('@qsys/toQsys')
 const qsys = require('@qsys')
 
 const fnAQs = (devices) => {
   try {
-    qsys.arr = devices
+    qsys.arr = [...devices]
 
     devices.forEach((device) => {
       const { deviceId } = device
-      if (qsys.obj[deviceId] === null || qsys.obj[deviceId] === undefined) {
+      if (!qsys.obj[deviceId]) {
         fnAQ(device)
       }
     })
-    for (let deviceId in qsys.obj) {
+
+    Object.keys(qsys.obj).forEach((deviceId) => {
       if (devices.findIndex((item) => item.deviceId === deviceId) === -1) {
         qsys.obj[deviceId].disconnect()
         delete qsys.obj[deviceId]
         logger.warn(`Qsys removed ${deviceId}`)
       }
-    }
+    })
   } catch (error) {
     logger.error(`AQs error: ${error}`)
   }
@@ -29,9 +30,7 @@ const fnAQs = (devices) => {
 const fnAQ = async (device) => {
   try {
     const { deviceId, name, ipaddress } = device
-    if (qsys.obj[deviceId] && qsys.obj[deviceId].connected) return
-    if (!ipaddress || ipaddress === undefined) return
-    //
+    if (qsys.obj[deviceId]?.connected || !ipaddress) return
     qsys.obj[deviceId] = new Qrc(device)
 
     qsys.obj[deviceId].on('connect', () => {
@@ -39,27 +38,29 @@ const fnAQ = async (device) => {
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
         if (idx !== -1) {
           qsys.arr[idx].connected = true
-          fnSetPaFB(deviceId)
+          fnSetPaFeedback(deviceId)
           fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
           logger.info(`Qsys ${name} ${ipaddress} connected`)
         } else {
-          logger.warn(`Qsys connect: ${deviceId} is not exists`)
+          logger.warn(`Qsys connect: ${deviceId} does not exist`)
         }
       } catch (error) {
-        logger.error(`Qsys connect error ${error}`)
+        logger.error(`Qsys connect error: ${error}`)
       }
     })
     // Qsys disconnect
     qsys.obj[deviceId].on('disconnect', () => {
       try {
+        // Send socket disconnect
+        fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
+        // find qsys device index
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
         if (idx !== -1) {
           qsys.arr[idx].connected = false
-          fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
           qsysReconnect(device)
           logger.info(`Qsys ${name} ${ipaddress} disconnected`)
         } else {
-          logger.warn(`Qsys disconnect: ${deviceId} is not exists`)
+          logger.warn(`Qsys disconnect: ${deviceId} does not exist`)
         }
       } catch (error) {
         logger.error(`Qsys disconnect error -- ${error}`)

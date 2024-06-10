@@ -1,72 +1,72 @@
 const qsys = require('..')
 const logger = require('@logger')
-const { fnSetPaFB } = require('../toQsys')
+const { fnSetPaFeedback } = require('../toQsys')
 
 const fnSetLive = (arr) => {
-  for (let item of arr) {
-    console.log(item)
+  arr.forEach((item) => {
     const { idx, deviceId, params } = item
-    fnSetPaFB(deviceId, false)
+    fnSetPaFeedback(deviceId, false)
     qsys.obj[deviceId].addCommand({
       id: idx,
       method: 'PA.PageSubmit',
       params: { ...params }
     })
-    fnSetPaFB(deviceId, true)
-  }
+    fnSetPaFeedback(deviceId, true)
+  })
 }
 
-const fnSetMessage = (arr) => {
-  for (let item of arr) {
-    console.log(item)
+const fnSetMuteessage = (arr) => {
+  arr.forEach((item) => {
     const { idx, deviceId, params } = item
-    fnSetPaFB(deviceId, false)
+    fnSetPaFeedback(deviceId, false)
     qsys.obj[deviceId].addCommand({
       id: idx,
       method: 'PA.PageSubmit',
       params: { ...params }
     })
-    fnSetPaFB(deviceId, true)
-  }
+    fnSetPaFeedback(deviceId, true)
+  })
 }
 
 const fnPageStop = (arr) => {
-  for (item of arr) {
+  arr.forEach((item) => {
     const { deviceId, idx, PageID } = item
+    fnSetPaFeedback(deviceId, false)
     qsys.obj[deviceId].addCommand({
       id: idx,
       method: 'PA.PageStop',
       params: { PageID }
     })
-  }
+    fnSetPaFeedback(deviceId, true)
+  })
 }
 
 const fnPageSingleStop = (obj) => {
   const { deviceId, PageID, idx } = obj
-  fnSetPaFB(deviceId, false)
+  fnSetPaFeedback(deviceId, false)
   qsys.obj[deviceId].addCommand({
     id: idx,
     method: 'PA.PageStop',
     params: { PageID }
   })
-  fnSetPaFB(deviceId, true)
+  fnSetPaFeedback(deviceId, true)
 }
 
 const fnPageCancel = (obj) => {
   const { deviceId, PageID, idx } = obj
-  fnSetPaFB(deviceId, false)
+  fnSetPaFeedback(deviceId, false)
   qsys.obj[deviceId].addCommand({
     id: idx,
     method: 'PA.PageCancel',
     params: { PageID }
   })
-  fnSetPaFB(deviceId, true)
+  fnSetPaFeedback(deviceId, true)
 }
 
 module.exports = {
   fnSetLive,
   fnPageStop,
-  fnSetMessage,
+  fnSetMuteessage,
   fnPageCancel,
   fnPageSingleStop
 }

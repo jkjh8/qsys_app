@@ -9,7 +9,7 @@ const fnGetQsysStatus = (deviceId) => {
   }
 }
 
-const fnSetPaFB = (deviceId, value = true) => {
+const fnSetPaFeedback = (deviceId, value = true) => {
   try {
     qsys.obj[deviceId].addCommand({
       id: 2000,
@@ -21,15 +21,14 @@ const fnSetPaFB = (deviceId, value = true) => {
   }
 }
 
-const fnGetVnMs = (deviceId) => {
+const fnGetVolumeMutes = (deviceId) => {
   try {
-    const Controls = []
-    const ZoneStatus =
-      qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
-    for (let item of ZoneStatus) {
-      Controls.push({ Name: `zone.${item.Zone}.gain` })
-      Controls.push({ Name: `zone.${item.Zone}.mute` })
-    }
+    const Controls = qsys.arr[
+      qsys.arr.findIndex((e) => e.deviceId === deviceId)
+    ].ZoneStatus.map((item) => ({
+      Name: `zone.${item.Zone}.gain`,
+      Name: `zone.${item.Zone}.mute`
+    }))
     qsys.obj[deviceId].addCommand({
       id: 3001,
       method: 'Component.Get',
@@ -40,18 +39,20 @@ const fnGetVnMs = (deviceId) => {
   }
 }
 
-const fnSetVnMs = (deviceId) => {
+const fnSetVolumeolumeMutes = (deviceId) => {
   try {
-    const Controls = []
-    const ZoneStatus =
-      qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
-    for (let item of ZoneStatus) {
-      Controls.push({ Name: `zone.${item.Zone}.gain`, Value: item.gain })
-      Controls.push({
+    const Controls = qsys.arr[
+      qsys.arr.findIndex((e) => e.deviceId === deviceId)
+    ].ZoneStatus.map(
+      (item) => ({
+        Name: `zone.${item.Zone}.gain`,
+        Value: item.gain
+      }),
+      {
         Name: `zone.${item.Zone}.mute`,
         Value: item.mute
-      })
-    }
+      }
+    )
     qsys.obj[deviceId].addCommand({
       id: 3003,
       method: 'Component.Set',
@@ -62,11 +63,12 @@ const fnSetVnMs = (deviceId) => {
   }
 }
 
-const fnGetVnM = (deviceId, zone) => {
+const fnGetVolumeMute = (deviceId, zone) => {
   try {
-    const Controls = []
-    Controls.push({ Name: `zone.${zone}.gain` })
-    Controls.push({ Name: `zone.${zone}.mute` })
+    const Controls = [
+      { Name: `zone.${zone}.gain` },
+      { Name: `zone.${zone}.mute` }
+    ]
     qsys.obj[deviceId].addCommand({
       id: 3001,
       method: 'Component.Get',
@@ -77,11 +79,12 @@ const fnGetVnM = (deviceId, zone) => {
   }
 }
 
-const fnSetV = (deviceId, zone, value) => {
+const fnSetVolume = (deviceId, zone, value) => {
   try {
-    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus[
+    const zoneStatus = qsys.arr.find((e) => e.deviceId === deviceId).ZoneStatus[
       zone - 1
-    ].gain = value
+    ]
+    zoneStatus.gain = value
     qsys.obj[deviceId].addCommand({
       id: 3003,
       method: 'Component.Set',
@@ -95,11 +98,12 @@ const fnSetV = (deviceId, zone, value) => {
   }
 }
 
-const fnSetM = (deviceId, zone, value) => {
+const fnSetMute = (deviceId, zone, value) => {
   try {
-    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus[
+    const zoneStatus = qsys.arr.find((e) => e.deviceId === deviceId).ZoneStatus[
       zone - 1
-    ].mute = value
+    ]
+    zoneStatus.mute = value
     qsys.obj[deviceId].addCommand({
       id: 3004,
       method: 'Component.Set',
@@ -113,7 +117,7 @@ const fnSetM = (deviceId, zone, value) => {
   }
 }
 
-const fnSTr = (args) => {
+const fnSetTransmitter = (args) => {
   const { deviceId, zone, ipaddress } = args
   qsys.obj[deviceId].addCommand({
     id: 4001,
@@ -128,22 +132,16 @@ const fnSTr = (args) => {
   })
 }
 
-const fnSTrs = (deviceId) => {
+const fnSetTransmitters = (deviceId) => {
   const ZoneStatus =
-    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
-  for (let item of ZoneStatus) {
-    fnSTr({
-      deviceId,
-      zone: item.Zone,
-      ipaddress:
-        item.destination && item.destination.ipaddress
-          ? item.destination.ipaddress
-          : ''
-    })
-  }
+    qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
+  ZoneStatus.forEach((item) => {
+    const ipaddress = item.destination?.ipaddress || ''
+    fnSetTransmitter({ deviceId, zone: item.Zone, ipaddress })
+  })
 }
 
-const fnGTr = (deviceId, zone) => {
+const fnGetTransmitter = (deviceId, zone) => {
   qsys.obj[deviceId].addCommand({
     id: 4002,
     method: 'Component.Get',
@@ -154,16 +152,17 @@ const fnGTr = (deviceId, zone) => {
   })
 }
 
-const fnGTrs = (deviceId) => {
+const fnGetTransmitters = (deviceId) => {
   const ZoneStatus =
-    qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)].ZoneStatus
-  for (let item of ZoneStatus) {
-    fnGTr({ deviceId, zone: item.Zone })
-  }
+    qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
+  ZoneStatus.forEach((item) => {
+    fnGetTransmitter(deviceId, item.Zone)
+  })
 }
-const fnPACA = (deviceId) => {
+
+const fnPaCancelAll = (deviceId) => {
   if (qsys.obj[deviceId]) {
-    fnSetPaFB(deviceId, false)
+    fnSetPaFeedback(deviceId, false)
     qsys.obj[deviceId].addCommand({
       id: 2009,
       method: 'Component.Set',
@@ -172,21 +171,21 @@ const fnPACA = (deviceId) => {
         Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
       }
     })
-    fnSetPaFB(deviceId, true)
+    fnSetPaFeedback(deviceId, true)
   }
 }
 
 module.exports = {
   fnGetQsysStatus,
-  fnSetPaFB,
-  fnGetVnMs,
-  fnSetVnMs,
-  fnGetVnM,
-  fnSetV,
-  fnSetM,
-  fnSTrs,
-  fnSTr,
-  fnGTr,
-  fnGTrs,
-  fnPACA
+  fnSetPaFeedback,
+  fnGetVolumeMutes,
+  fnSetVolumeolumeMutes,
+  fnGetVolumeMute,
+  fnSetVolume,
+  fnSetMute,
+  fnSetTransmitters,
+  fnSetTransmitter,
+  fnGetTransmitter,
+  fnGetTransmitters,
+  fnPaCancelAll
 }
