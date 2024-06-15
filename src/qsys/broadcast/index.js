@@ -16,16 +16,20 @@ const fnSetLive = (arr) => {
 }
 
 const fnSetMuteessage = (arr) => {
-  arr.forEach((item) => {
-    const { idx, deviceId, params } = item
-    fnSetPaFeedback(deviceId, false)
-    qsys.obj[deviceId].addCommand({
-      id: idx,
-      method: 'PA.PageSubmit',
-      params: { ...params }
+  try {
+    arr.forEach((item) => {
+      const { idx, deviceId, params } = item
+      fnSetPaFeedback(deviceId, false)
+      qsys.obj[deviceId].addCommand({
+        id: idx,
+        method: 'PA.PageSubmit',
+        params: { ...params }
+      })
+      fnSetPaFeedback(deviceId, true)
     })
-    fnSetPaFeedback(deviceId, true)
-  })
+  } catch (error) {
+    logger.error('fnSetMuteessage', error)
+  }
 }
 
 const fnPageStop = (arr) => {
