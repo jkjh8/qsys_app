@@ -118,60 +118,80 @@ const fnSetMute = (deviceId, zone, value) => {
 }
 
 const fnSetTransmitter = (args) => {
-  const { deviceId, zone, ipaddress } = args
-  qsys.obj[deviceId].addCommand({
-    id: 4001,
-    method: 'Component.Set',
-    params: {
-      Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
-      Controls: [
-        { Name: 'host', Value: ipaddress },
-        { Name: 'port', Value: 4444 }
-      ]
-    }
-  })
+  try {
+    const { deviceId, zone, ipaddress } = args
+    qsys.obj[deviceId].addCommand({
+      id: 4001,
+      method: 'Component.Set',
+      params: {
+        Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
+        Controls: [
+          { Name: 'host', Value: ipaddress },
+          { Name: 'port', Value: 4444 }
+        ]
+      }
+    })
+  } catch (error) {
+    logger.error(`Set Transmitter error -- ${error}`)
+  }
 }
 
 const fnSetTransmitters = (deviceId) => {
-  const ZoneStatus =
-    qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
-  ZoneStatus.forEach((item) => {
-    const ipaddress = item.destination?.ipaddress || ''
-    fnSetTransmitter({ deviceId, zone: item.Zone, ipaddress })
-  })
+  try {
+    const ZoneStatus =
+      qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
+    ZoneStatus.forEach((item) => {
+      const ipaddress = item.destination?.ipaddress || ''
+      fnSetTransmitter({ deviceId, zone: item.Zone, ipaddress })
+    })
+  } catch (error) {
+    logger.error(`Set Transmitters error -- ${error}`)
+  }
 }
 
 const fnGetTransmitter = (deviceId, zone) => {
-  qsys.obj[deviceId].addCommand({
-    id: 4002,
-    method: 'Component.Get',
-    params: {
-      Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
-      Controls: [{ Name: 'host' }]
-    }
-  })
+  try {
+    qsys.obj[deviceId].addCommand({
+      id: 4002,
+      method: 'Component.Get',
+      params: {
+        Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
+        Controls: [{ Name: 'host' }]
+      }
+    })
+  } catch (error) {
+    logger.error(`Get Transmitter error -- ${error}`)
+  }
 }
 
 const fnGetTransmitters = (deviceId) => {
-  const ZoneStatus =
-    qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
-  ZoneStatus.forEach((item) => {
-    fnGetTransmitter(deviceId, item.Zone)
-  })
+  try {
+    const ZoneStatus =
+      qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
+    ZoneStatus.forEach((item) => {
+      fnGetTransmitter(deviceId, item.Zone)
+    })
+  } catch (error) {
+    logger.error(`Get Transmitters error -- ${error}`)
+  }
 }
 
 const fnPaCancelAll = (deviceId) => {
-  if (qsys.obj[deviceId]) {
-    fnSetPaFeedback(deviceId, false)
-    qsys.obj[deviceId].addCommand({
-      id: 2009,
-      method: 'Component.Set',
-      params: {
-        Name: 'PA',
-        Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
-      }
-    })
-    fnSetPaFeedback(deviceId, true)
+  try {
+    if (qsys.obj[deviceId]) {
+      fnSetPaFeedback(deviceId, false)
+      qsys.obj[deviceId].addCommand({
+        id: 2009,
+        method: 'Component.Set',
+        params: {
+          Name: 'PA',
+          Controls: [{ Name: 'cancel.all.commands', Value: 1 }]
+        }
+      })
+      fnSetPaFeedback(deviceId, true)
+    }
+  } catch (error) {
+    logger.error(`PA Cancel All error -- ${error}`)
   }
 }
 

@@ -74,3 +74,11 @@ module.exports = {
   fnPageCancel,
   fnPageSingleStop
 }
+
+module.exports = {
+  fnSetLive,
+  fnPageStop,
+  fnSetMuteessage,
+  fnPageCancel,
+  fnPageSingleStop
+}

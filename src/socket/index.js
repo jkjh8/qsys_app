@@ -1,8 +1,9 @@
 const { io } = require('socket.io-client')
 const logger = require('@logger')
 const { socketParser } = require('./fromSocket')
+
 exports.connectIO = () => {
-  const socket = io.connect('https://localhost/qsys', {
+  const socket = io.connect('http://127.0.0.1/qsys', {
     // secure: true,
     withCredentials: true,
     rejectUnauthorized: false,
