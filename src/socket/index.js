@@ -3,7 +3,7 @@ const logger = require('@logger')
 const { socketParser } = require('./fromSocket')
 
 exports.connectIO = () => {
-  const socket = io.connect('http://127.0.0.1/qsys', {
+  const socket = io.connect('http://127.0.0.1:3000/qsys', {
     // secure: true,
     withCredentials: true,
     rejectUnauthorized: false,

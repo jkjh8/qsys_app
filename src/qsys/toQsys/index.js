@@ -39,25 +39,36 @@ const fnGetVolumeMutes = (deviceId) => {
   }
 }
 
-const fnSetVolumeolumeMutes = (deviceId) => {
+// 전체 채널의 볼륨과 뮤트 상태를 설정
+const fnSetVolumeolumeMutes = async (deviceId) => {
   try {
-    const Controls = qsys.arr[
-      qsys.arr.findIndex((e) => e.deviceId === deviceId)
-    ].ZoneStatus.map(
-      (item) => ({
-        Name: `zone.${item.Zone}.gain`,
-        Value: item.gain
-      }),
-      {
-        Name: `zone.${item.Zone}.mute`,
-        Value: item.mute
-      }
+    // qsys 찾기
+    const idx = qsys.arr.findIndex((e) => e.deviceId === deviceId)
+    // qsys가 없으면 에러 출력
+    if (idx === -1) return logger.error(`Device not found`)
+    // qsys의 ZoneStatus를 Controls로 변환
+    const Controls = []
+    // Controls에 zone별 gain, mute 추가
+    await Promise.all(
+      qsys.arr[idx].ZoneStatus.map(async (item) => {
+        Controls.push({
+          Name: `zone.${item.Zone}.gain`,
+          Value: item.gain
+        })
+        Controls.push({
+          Name: `zone.${item.Zone}.mute`,
+          Value: item.mute
+        })
+      })
     )
+    // qsys에 명령 추가
     qsys.obj[deviceId].addCommand({
       id: 3003,
       method: 'Component.Set',
       params: { Name: 'PA', Controls }
     })
+    // logger에 로그 출력
+    logger.info(`Set Volumes Mutes success - ${deviceId}`)
   } catch (error) {
     logger.error(`Set Volumes Mutes error -- ${error}`)
   }
