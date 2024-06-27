@@ -78,7 +78,7 @@ module.exports = function parser(deviceId, obj, arr) {
       case 4002:
         const zone = result.Name.replace(/[^0-9]/g, '')
         const value = result.Controls[0].String
-        fnSendSocket('qsys:rttr', { deviceId, zone, value })
+        fnSendSocket('qsys:get:tr', { deviceId, zone, value })
         break
       case 4004:
         break

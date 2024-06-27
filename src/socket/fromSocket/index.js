@@ -4,7 +4,8 @@ const { fnAQs } = require('@qsys/add')
 const {
   fnSetTransmitter,
   fnGetVolumeMute,
-  fnSetVolumeolumeMutes,
+  fnGetVolumeMutes,
+  fnSetVolumeMutes,
   fnSetVolume,
   fnSetMute,
   fnSetTransmitters,
@@ -48,8 +49,11 @@ const socketParser = (socket) => {
       })
     }
   })
+  socket.on('zone:get:channels', (deviceId) => {
+    fnGetVolumeMutes(deviceId)
+  })
   socket.on('zone:set:device', (deviceId) => {
-    fnSetVolumeolumeMutes(deviceId)
+    fnSetVolumeMutes(deviceId)
     fnSetTransmitters(deviceId)
   })
 }

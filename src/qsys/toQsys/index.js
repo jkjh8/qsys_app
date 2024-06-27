@@ -21,26 +21,8 @@ const fnSetPaFeedback = (deviceId, value = true) => {
   }
 }
 
-const fnGetVolumeMutes = (deviceId) => {
-  try {
-    const Controls = qsys.arr[
-      qsys.arr.findIndex((e) => e.deviceId === deviceId)
-    ].ZoneStatus.map((item) => ({
-      Name: `zone.${item.Zone}.gain`,
-      Name: `zone.${item.Zone}.mute`
-    }))
-    qsys.obj[deviceId].addCommand({
-      id: 3001,
-      method: 'Component.Get',
-      params: { Name: 'PA', Controls }
-    })
-  } catch (error) {
-    logger.error(`Get Volumes Mutes status error -- ${error}`)
-  }
-}
-
 // 전체 채널의 볼륨과 뮤트 상태를 설정
-const fnSetVolumeolumeMutes = async (deviceId) => {
+const fnSetVolumeMutes = async (deviceId) => {
   try {
     // qsys 찾기
     const idx = qsys.arr.findIndex((e) => e.deviceId === deviceId)
@@ -74,6 +56,26 @@ const fnSetVolumeolumeMutes = async (deviceId) => {
   }
 }
 
+// 디바이스 전체 볼륨 뮤트 가져오기
+const fnGetVolumeMutes = (deviceId) => {
+  try {
+    const Controls = qsys.arr[
+      qsys.arr.findIndex((e) => e.deviceId === deviceId)
+    ].ZoneStatus.map((item) => ({
+      Name: `zone.${item.Zone}.gain`,
+      Name: `zone.${item.Zone}.mute`
+    }))
+    qsys.obj[deviceId].addCommand({
+      id: 3001,
+      method: 'Component.Get',
+      params: { Name: 'PA', Controls }
+    })
+  } catch (error) {
+    logger.error(`Get Volumes Mutes status error -- ${error}`)
+  }
+}
+
+// 해당 채널 볼륨 뮤트 가져오기
 const fnGetVolumeMute = (deviceId, zone) => {
   try {
     const Controls = [
@@ -210,7 +212,7 @@ module.exports = {
   fnGetQsysStatus,
   fnSetPaFeedback,
   fnGetVolumeMutes,
-  fnSetVolumeolumeMutes,
+  fnSetVolumeMutes,
   fnGetVolumeMute,
   fnSetVolume,
   fnSetMute,
