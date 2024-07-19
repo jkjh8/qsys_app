@@ -52,13 +52,11 @@ module.exports = function parser(deviceId, obj, arr) {
         fnSendSocket('qsys:page:cancel', { deviceId })
         break
       case 3001:
-        console.log(deviceId, 3001)
         const vols = result.Controls
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
         const ZoneStatus = qsys.arr[idx].ZoneStatus
 
         for (let val of vols) {
-          console.log(val)
           const channel = Number(val.Name.replace(/[^0-9]/g, ''))
           const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
 
