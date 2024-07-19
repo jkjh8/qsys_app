@@ -59,17 +59,21 @@ const fnSetVolumeMutes = async (deviceId) => {
 // 디바이스 전체 볼륨 뮤트 가져오기
 const fnGetVolumeMutes = (deviceId) => {
   try {
-    const Controls = qsys.arr[
-      qsys.arr.findIndex((e) => e.deviceId === deviceId)
-    ].ZoneStatus.map((item) => ({
-      Name: `zone.${item.Zone}.gain`,
-      Name: `zone.${item.Zone}.mute`
-    }))
-    qsys.obj[deviceId].addCommand({
-      id: 3001,
-      method: 'Component.Get',
-      params: { Name: 'PA', Controls }
-    })
+    const Controls = []
+    const current =
+      qsys.arr[qsys.arr.findIndex((e) => e.ipaddress === this.ipaddress)]
+    if (current && current.ZoneStatus) {
+      for (let zone of current.ZoneStatus) {
+        Controls.push({ Name: `zone.${zone.Zone}.gain` })
+        Controls.push({ Name: `zone.${zone.Zone}.mute` })
+      }
+
+      qsys.obj[deviceId].addCommand({
+        id: 3001,
+        method: 'Component.Get',
+        params: { Name: 'PA', Controls }
+      })
+    }
   } catch (error) {
     logger.error(`Get Volumes Mutes status error -- ${error}`)
   }

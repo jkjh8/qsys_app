@@ -1,5 +1,6 @@
 const EventEmitter = require('events').EventEmitter
 const net = require('net')
+const qsys = require('..')
 // import { removeQsys } from '..'
 
 module.exports = class Qrc extends EventEmitter {
@@ -168,8 +169,25 @@ module.exports = class Qrc extends EventEmitter {
         this.ivConnection = setInterval(() => {
           this.timeout = this.timeout - 1
           if (this.timeout < 5) {
-            this.addCommand({ method: 'NoOp', params: {} })
-            this.emit('debug', `qsys qrc ${this.name} -- noOp`)
+            // this.addCommand({ method: 'NoOp', params: {} })
+            // this.emit('debug', `qsys qrc ${this.name} -- noOp`)
+            //get volume and mute status
+            const Controls = []
+            const current =
+              qsys.arr[
+                qsys.arr.findIndex((e) => e.ipaddress === this.ipaddress)
+              ]
+            if (current && current.ZoneStatus) {
+              for (let zone of current.ZoneStatus) {
+                Controls.push({ Name: `zone.${zone.Zone}.gain` })
+                Controls.push({ Name: `zone.${zone.Zone}.mute` })
+              }
+              this.addCommand({
+                id: 3001,
+                method: 'Component.Get',
+                params: { Name: 'PA', Controls }
+              })
+            }
           }
           // clear interval at disconnected
           if (!this.connected) {
