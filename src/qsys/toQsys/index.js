@@ -144,7 +144,8 @@ const fnSetTransmitter = (args) => {
         Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
         Controls: [
           { Name: 'host', Value: ipaddress },
-          { Name: 'port', Value: 4444 }
+          { Name: 'port', Value: 3030 },
+          { Name: 'format', Value: 'TCP' }
         ]
       }
     })
