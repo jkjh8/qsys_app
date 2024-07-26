@@ -24,7 +24,7 @@ const {
 
 const socketParser = (socket) => {
   socket.on('qsys:devices', (arr) => fnAQs(arr))
-  socket.on('qsys:device:gtr', (obj) => fnSetTransmitter(obj))
+  socket.on('qsys:device:str', (obj) => fnSetTransmitter(obj))
   socket.on('qsys:volume', (obj) =>
     fnSetVolume(obj.deviceId, obj.zone, obj.value)
   )
