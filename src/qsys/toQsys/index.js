@@ -136,7 +136,7 @@ const fnSetMute = (deviceId, zone, value) => {
 
 const fnSetTransmitter = (args) => {
   try {
-    const { deviceId, zone, ipaddress } = args
+    const { deviceId, zone, ipaddress, port } = args
     qsys.obj[deviceId].addCommand({
       id: 4001,
       method: 'Component.Set',
@@ -144,8 +144,8 @@ const fnSetTransmitter = (args) => {
         Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
         Controls: [
           { Name: 'host', Value: ipaddress },
-          { Name: 'port', Value: 3030 },
-          { Name: 'format', Value: 'TCP' }
+          { Name: 'port', Value: port },
+          { Name: 'format', Value: 'PCM' }
         ]
       }
     })
@@ -160,7 +160,8 @@ const fnSetTransmitters = (deviceId) => {
       qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
     ZoneStatus.forEach((item) => {
       const ipaddress = item.destination?.ipaddress || ''
-      fnSetTransmitter({ deviceId, zone: item.Zone, ipaddress })
+      const port = item.destination?.port || 3030
+      fnSetTransmitter({ deviceId, zone: item.Zone, ipaddress, port })
     })
   } catch (error) {
     logger.error(`Set Transmitters error -- ${error}`)
@@ -174,7 +175,7 @@ const fnGetTransmitter = (deviceId, zone) => {
       method: 'Component.Get',
       params: {
         Name: `Media_Stream_Transmitter_MS-TX-${zone}`,
-        Controls: [{ Name: 'host' }]
+        Controls: [{ Name: 'host' }, { Name: 'port' }]
       }
     })
   } catch (error) {
