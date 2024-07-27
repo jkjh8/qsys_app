@@ -2,6 +2,7 @@ const logger = require('@logger')
 const qsys = require('@qsys')
 const { fnAQs } = require('@qsys/add')
 const {
+  fnSetPaFeedback,
   fnSetTransmitter,
   fnGetVolumeMute,
   fnGetVolumeMutes,
@@ -55,6 +56,9 @@ const socketParser = (socket) => {
   socket.on('zone:set:device', (deviceId) => {
     fnSetVolumeMutes(deviceId)
     fnSetTransmitters(deviceId)
+  })
+  socket.on('zone:get:active', (deviceId) => {
+    fnSetPaFeedback(deviceId, true)
   })
 }
 
