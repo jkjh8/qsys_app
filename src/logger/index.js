@@ -5,7 +5,7 @@ const path = require('node:path')
 // initialize functions
 const { combine, timestamp, label, printf } = winston.format
 // path
-const logpath = path.join('D:/Data/', 'QSYS')
+const logpath = path.join('D:/Data/log/qsys', 'app')
 
 const logformat = printf(({ level, message, timestamp }) => {
   return `${timestamp} ${level} ${message}`
