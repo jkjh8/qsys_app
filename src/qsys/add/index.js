@@ -1,8 +1,21 @@
+const qsys = require('@qsys')
 const logger = require('@logger')
+const dbQsys = require('@db/models/qsys')
 const Qrc = require('../qrc')
 const { fnSendSocket } = require('@api/socket')
 const { fnSetPaFeedback } = require('@qsys/toQsys')
-const qsys = require('@qsys')
+const { fnSendMulticast } = require('@multicast')
+
+const fnGetQsysFromDB = () => {
+  dbQsys
+    .find({})
+    .then((res) => {
+      fnAQs(res)
+    })
+    .catch((err) => {
+      logger.error(err)
+    })
+}
 
 const fnAQs = (devices) => {
   try {
@@ -38,8 +51,14 @@ const fnAQ = async (device) => {
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
         if (idx !== -1) {
           qsys.arr[idx].connected = true
+          // db에 업데이트
+          dbQsys.updateOne({ deviceId }, { connected: true }).exec()
           fnSetPaFeedback(deviceId)
-          fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
+          // send multicast
+          fnSendMulticast('connect', { deviceId, name, ipaddress })
+          // 볼륨 뮤트 수집
+          // fnGetVolumeMutes(deviceId)
+          // fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
           logger.info(`Qsys ${name} ${ipaddress} connected`)
         } else {
           logger.warn(`Qsys connect: ${deviceId} does not exist`)
@@ -52,13 +71,16 @@ const fnAQ = async (device) => {
     qsys.obj[deviceId].on('disconnect', () => {
       try {
         // Send socket disconnect
-        fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
         // find qsys device index
         const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
         if (idx !== -1) {
+          if (qsys.arr[idx].connected) {
+            dbQsys.updateOne({ deviceId }, { connected: false }).exec()
+            fnSendMulticast('disconnect', { deviceId, name, ipaddress })
+            logger.info(`Qsys ${name} ${ipaddress} disconnected`)
+          }
           qsys.arr[idx].connected = false
           qsysReconnect(device)
-          logger.info(`Qsys ${name} ${ipaddress} disconnected`)
         } else {
           logger.warn(`Qsys disconnect: ${deviceId} does not exist`)
         }
@@ -95,4 +117,4 @@ const qsysReconnect = (device) => {
   }, 5000)
 }
 
-module.exports = { fnAQs, fnAQ }
+module.exports = { fnAQs, fnAQ, fnGetQsysFromDB }

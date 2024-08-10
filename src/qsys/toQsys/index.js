@@ -60,14 +60,12 @@ const fnSetVolumeMutes = async (deviceId) => {
 const fnGetVolumeMutes = (deviceId) => {
   try {
     const Controls = []
-    const current =
-      qsys.arr[qsys.arr.findIndex((e) => e.ipaddress === this.ipaddress)]
+    const current = qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)]
     if (current && current.ZoneStatus) {
       for (let zone of current.ZoneStatus) {
         Controls.push({ Name: `zone.${zone.Zone}.gain` })
         Controls.push({ Name: `zone.${zone.Zone}.mute` })
       }
-
       qsys.obj[deviceId].addCommand({
         id: 3001,
         method: 'Component.Get',

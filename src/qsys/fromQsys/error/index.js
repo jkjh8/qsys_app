@@ -1,5 +1,6 @@
 const logger = require('@logger')
-const { fnSendSocket } = require('@api/socket')
+const { logError } = require('@api/logs')
+// const { fnSendSocket } = require('@api/socket')
 
 module.exports = (deviceId, obj) => {
   switch (obj.id) {
@@ -8,9 +9,8 @@ module.exports = (deviceId, obj) => {
       //
       break
     default:
-      console.log('byError', deviceId, obj)
+      logError(`디바이스 오류 ${deviceId} ${obj}`, 'QSYS')
       break
   }
-  logger.error(`from Qsys Error ${deviceId} ${JSON.stringify(obj)}`)
-  return fnSendSocket('qsys:error', obj)
+  logError(`디바이스 오류 ${deviceId} ${obj}`, 'QSYS')
 }

@@ -24,14 +24,14 @@ const {
 } = require('@qsys/broadcast')
 
 const socketParser = (socket) => {
-  socket.on('qsys:devices', (arr) => fnAQs(arr))
-  socket.on('qsys:device:str', (obj) => fnSetTransmitter(obj))
+  // socket.on('qsys:devices', (arr) => fnAQs(arr))
   socket.on('qsys:volume', (obj) =>
     fnSetVolume(obj.deviceId, obj.zone, obj.value)
   )
   socket.on('qsys:mute', (obj) => fnSetMute(obj.deviceId, obj.zone, obj.value))
   socket.on('qsys:device:gtrs', (obj) => fnGetTransmitters(obj.deviceId))
   socket.on('qsys:device:strs', (obj) => fnSetTransmitters(obj.deviceId))
+  socket.on('qsys:device:str', (obj) => fnSetTransmitter(obj))
   socket.on('qsys:page:cancelAll', (deviceId) => fnPaCancelAll(deviceId))
   socket.on('qsys:page:live', (arr) => fnSetLive(arr))
   socket.on('qsys:page:message', (arr) => fnSetMuteessage(arr))
