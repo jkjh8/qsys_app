@@ -14,53 +14,26 @@ module.exports = async function parser(deviceId, obj, arr) {
     switch (id) {
       case 1000:
         dbQsys.updateOne({ deviceId }, { EngineStatus: result }).exec()
-        // fnSendMulticast('device', { deviceId, EngineStatus: result })
-        // fnSendSocket('qsys:device', {
-        //   deviceId,
-        //   data: { EngineStatus: result }
-        // })
+
         break
       case 2000:
         if (result) {
           const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
           const ZoneStatus = qsys.arr[idx].ZoneStatus
-          // const channel = arr.length - 1
           dbQsys
             .updateOne({ deviceId }, { ZoneStatus, ZoneStatusConfigure: true })
             .exec()
-          // fnSendSocket('qsys:device', {
-          //   deviceId,
-          //   data: {
-          //     ZoneStatusConfigure: result,
-          //     channel,
-          //     ZoneStatus
-          //   }
-          // })
         } else {
           dbQsys.updateOne({ deviceId }, { ZoneStatusConfigure: false }).exec()
-          // fnSendSocket('qsys:device', {
-          //   deviceId,
-          //   data: {
-          //     ZoneStatusConfigure: result
-          //   }
-          // })
         }
         break
       case 2001:
         dbQsys.updateOne({ deviceId }, { PaConfig: result }).exec()
-        // fnSendSocket('qsys:device', { deviceId, data: { PaConfig: result } })
         break
       case 2002:
-        // fnSendSocket('qsys:page:message', { deviceId, result })
-        break
       case 2003:
-        // fnSendSocket('qsys:page:live', { deviceId, result })
-        break
       case 2008:
-        // fnSendSocket('qsys:page:stop', { deviceId })
-        break
       case 2009:
-        // fnSendSocket('qsys:page:cancel', { deviceId })
         break
       case 3001:
         const vols = result.Controls
@@ -80,7 +53,7 @@ module.exports = async function parser(deviceId, obj, arr) {
           }
         }
         // db update & send multicast
-        fnSendMulticastZoneStatus(deviceId, ZoneStatus)
+        // fnSendMulticastZoneStatus(deviceId, ZoneStatus)
         break
       case 3003:
       case 3004:
@@ -104,12 +77,11 @@ module.exports = async function parser(deviceId, obj, arr) {
           )
           .exec()
         fnSendMulticast('deviceAll', {})
-        // fnSendSocket('qsys:get:tr', { deviceId, zone, value })
         break
       case 4004:
         break
       default:
-        console.log('byID', deviceId, obj, arr)
+        logger.info(`ID evnet ${deviceId}, ${obj}, ${arr}`)
         if (Object.keys(result).includes('PageID')) {
           dbQsys
             .updateOne(
@@ -123,11 +95,6 @@ module.exports = async function parser(deviceId, obj, arr) {
               { 'devices.$.PageID': result.PageID }
             )
             .exec()
-          // fnSendSocket('qsys:page:id', {
-          //   deviceId,
-          //   idx: id,
-          //   PageID: result.PageID
-          // })
         }
         break
     }

@@ -30,6 +30,9 @@ const fnMulticastParser = (key, value) => {
     case 'qsys:volume':
       fnSetVolume(value.deviceId, value.zone, value.value)
       break
+    case 'qsys:mute':
+      fnSetMute(value.deviceId, value.zone, value.value)
+      break
     case 'qsys:device:gtrs':
       fnGetTransmitters(value.deviceId)
       break
@@ -69,6 +72,10 @@ const fnMulticastParser = (key, value) => {
         })
       }
       break
+    case 'zone:get:active':
+      fnSetPaFeedback(value)
+      break
+
     case 'getAll':
       // 지연 로딩을 사용하여 순환 종속성 문제 해결
       const { fnGetQsysFromDB } = require('@qsys/add')

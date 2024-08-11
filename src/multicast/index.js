@@ -15,7 +15,7 @@ function fnInitMulticast() {
   })
   socket.on('listening', () => {
     socket.setBroadcast(true)
-    socket.setMulticastTTL(128)
+    socket.setMulticastTTL(0)
     socket.addMembership(address)
     logger.info(`Server is listening on ${address}:${port}`)
   })
@@ -23,18 +23,30 @@ function fnInitMulticast() {
 }
 
 function fnSendMulticast(key, value) {
-  let jsonMsg = JSON.stringify({ key, value })
-  const buf = Buffer.from(jsonMsg)
+  const buf = Buffer.from(JSON.stringify({ key, value }))
   socket.send(buf, 0, buf.length, 9908, address, (err) => {
     if (err) {
       console.error(err)
     }
   })
+  // for (let i = 0; i < 3; i++) {
+  //   socket.send(buf, 0, buf.length, 9908 + i, address, (err) => {
+  //     if (err) {
+  //       console.error(err)
+  //     }
+  //   })
+  // }
 }
 
 const fnSendMulticastZoneStatus = (deviceId, ZoneStatus) => {
-  dbQsys.updateOne({ deviceId }, { ZoneStatus }).exec()
-  fnSendMulticast('ZoneStatus', { deviceId, ZoneStatus })
+  dbQsys
+    .updateOne({ deviceId }, { ZoneStatus })
+    .then(() => {
+      fnSendMulticast('ZoneStatus', { deviceId, ZoneStatus })
+    })
+    .catch((err) => {
+      logger.error(`fnSendMulticastZoneStatus: ${err}`)
+    })
 }
 
 module.exports = {

@@ -47,7 +47,6 @@ module.exports = function parser(deviceId, obj) {
         const { State, PageID } = params
         if (State === 'done') {
           // 해당 페이지 찾기
-          console.log('done', deviceId, PageID)
           dbPage
             .findOne({ devices: { $elemMatch: { deviceId, PageID } } })
             .then(async (res) => {
