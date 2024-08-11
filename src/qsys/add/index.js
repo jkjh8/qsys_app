@@ -1,14 +1,19 @@
 const qsys = require('@qsys')
 const logger = require('@logger')
 const dbQsys = require('@db/models/qsys')
+const dbBarix = require('@db/models/barix')
 const Qrc = require('../qrc')
 const { fnSendSocket } = require('@api/socket')
 const { fnSetPaFeedback } = require('@qsys/toQsys')
 const { fnSendMulticast } = require('@multicast')
 
-const fnGetQsysFromDB = () => {
+const fnGetQsysFromDB = async () => {
   dbQsys
-    .find({})
+    .find()
+    .populate(
+      'ZoneStatus.destination',
+      'name idx deviceId ipaddress status streamurl'
+    )
     .then((res) => {
       fnAQs(res)
     })

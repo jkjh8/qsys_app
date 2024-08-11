@@ -72,6 +72,11 @@ const fnMulticastParser = (key, value) => {
         })
       }
       break
+    case 'zone:set:device':
+      fnSetTransmitters(value)
+      fnSetVolumeMutes(value)
+      console.log(value)
+      break
     case 'zone:get:active':
       fnSetPaFeedback(value)
       break

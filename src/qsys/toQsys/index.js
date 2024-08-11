@@ -156,6 +156,7 @@ const fnSetTransmitters = (deviceId) => {
   try {
     const ZoneStatus =
       qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
+    console.log(ZoneStatus)
     ZoneStatus.forEach((item) => {
       const ipaddress = item.destination?.ipaddress || ''
       const port = item.destination?.port || 3030
