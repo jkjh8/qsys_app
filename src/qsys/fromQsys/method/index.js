@@ -85,7 +85,7 @@ module.exports = function parser(deviceId, obj) {
           .exec()
         break
       default:
-        console.log('byMethod', deviceId, obj)
+        // console.log('byMethod', deviceId, obj)
         break
     }
   } catch (error) {

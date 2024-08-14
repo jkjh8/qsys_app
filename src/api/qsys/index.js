@@ -5,7 +5,7 @@ const fnGetQsysFromDB = () => {
   dbQsys
     .find({})
     .then((res) => {
-      console.log(res)
+      // console.log(res)
     })
     .catch((err) => {
       logger.error(err)

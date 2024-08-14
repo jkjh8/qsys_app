@@ -40,7 +40,6 @@ const fnMulticastParser = (key, value) => {
       fnSetTransmitters(value.deviceId)
       break
     case 'qsys:page:cancelAll':
-      console.log(value)
       fnPaCancelAll(value)
       break
     case 'qsys:page:live':
@@ -50,14 +49,12 @@ const fnMulticastParser = (key, value) => {
       fnSetMuteessage(value)
       break
     case 'qsys:page:stop':
-      console.log(value)
       fnPageStop(value)
       break
     case 'qsys:page:sstop':
       fnPageSingleStop(value)
       break
     case 'qsys:page:cancel':
-      console.log(value)
       fnPageCancel(value)
       break
     case 'zone:set:channel':
@@ -75,7 +72,6 @@ const fnMulticastParser = (key, value) => {
     case 'zone:set:device':
       fnSetTransmitters(value)
       fnSetVolumeMutes(value)
-      console.log(value)
       break
     case 'zone:get:active':
       fnSetPaFeedback(value)
