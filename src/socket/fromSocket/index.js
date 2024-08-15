@@ -24,7 +24,18 @@ const {
 } = require('@qsys/broadcast')
 
 const socketParser = (socket) => {
-  socket.on('qsys:devices', (arr) => fnAQs(arr))
+  socket.on('qsys:devices', (data) => {
+    try {
+      if (typeof data === 'string') {
+        data = JSON.parse(data)
+      }
+      if (typeof data === 'object') {
+        fnAQs(data)
+      }
+    } catch (error) {
+      logger.error(`Qsys devices error: ${error}`)
+    }
+  })
   socket.on('qsys:volume', (obj) =>
     fnSetVolume(obj.deviceId, obj.zone, obj.value)
   )

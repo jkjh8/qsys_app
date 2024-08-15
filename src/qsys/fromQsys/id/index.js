@@ -10,21 +10,19 @@ module.exports = async function parser(deviceId, obj, arr) {
   try {
     const { id, result } = obj
     let ZoneStatus = []
+    let idx = null
     switch (id) {
       case 1000:
-        dbQsys.updateOne({ deviceId }, { EngineStatus: result }).exec()
-
+        // dbQsys.updateOne({ deviceId }, { EngineStatus: result }).exec()
+        fnSendSocket('EngineStatus', { deviceId, EngineStatus: result })
         break
       case 2000:
-        if (result) {
-          const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
-          const ZoneStatus = qsys.arr[idx].ZoneStatus
-          dbQsys
-            .updateOne({ deviceId }, { ZoneStatus, ZoneStatusConfigure: true })
-            .exec()
-        } else {
-          dbQsys.updateOne({ deviceId }, { ZoneStatusConfigure: false }).exec()
-        }
+        idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+        qsys.arr[idx].ZoneStatusConfigure = result == true
+        fnSendSocket('ZoneStatusConfigure', {
+          deviceId,
+          ZoneStatusConfigure: result == true
+        })
         break
       case 2001:
         dbQsys.updateOne({ deviceId }, { PaConfig: result }).exec()
@@ -36,34 +34,52 @@ module.exports = async function parser(deviceId, obj, arr) {
         break
       case 3001:
         const vols = result.Controls
-        dbQsys
-          .findOne({ deviceId })
-          .populate(
-            'ZoneStatus.destination',
-            'name idx deviceId ipaddress status streamurl'
-          )
-          .then((res) => {
-            const ZoneStatus = res.ZoneStatus
-            for (let val of vols) {
-              const channel = Number(val.Name.replace(/[^0-9]/g, ''))
-              const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
+        idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+        ZoneStatus = qsys.arr[idx].ZoneStatus
+        for (let val of vols) {
+          const channel = Number(val.Name.replace(/[^0-9]/g, ''))
+          const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
 
-              if (val.Name.includes('gain')) {
-                ZoneStatus[idx].gain = val.Value
-              }
+          if (val.Name.includes('gain')) {
+            ZoneStatus[idx].gain = val.Value
+          }
 
-              if (val.Name.includes('mute')) {
-                ZoneStatus[idx].mute = val.Value
-              }
-            }
-            // db update & send socket
-            // console.log('ZoneStatus', { deviceId, ZoneStatus })
-            fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
-          })
+          if (val.Name.includes('mute')) {
+            ZoneStatus[idx].mute = val.Value
+          }
+        }
+        // dbQsys
+        //   .findOne({ deviceId })
+        //   .populate(
+        //     'ZoneStatus.destination',
+        //     'name idx deviceId ipaddress status streamurl'
+        //   )
+        //   .then((res) => {
+        //     const ZoneStatus = res.ZoneStatus
+        //     for (let val of vols) {
+        //       const channel = Number(val.Name.replace(/[^0-9]/g, ''))
+        //       const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
+
+        //       if (val.Name.includes('gain')) {
+        //         ZoneStatus[idx].gain = val.Value
+        //       }
+
+        //       if (val.Name.includes('mute')) {
+        //         ZoneStatus[idx].mute = val.Value
+        //       }
+        //     }
+        // db update & send socket
+        // console.log('ZoneStatus', { deviceId, ZoneStatus })
+        fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
+        // })
         break
       case 3003:
       case 3004:
       case 4001:
+        // ZoneStatus =
+        //   qsys.arr[qsys.arr.find((item) => item.deviceId === deviceId)]
+        //     .ZoneStatus
+        // fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
         fnSendSocket('deviceAll', {})
         break
       case 4002:
@@ -76,31 +92,32 @@ module.exports = async function parser(deviceId, obj, arr) {
             barixId = updated._id
           }
         }
-        await dbQsys
-          .updateOne(
-            { deviceId, 'ZoneStatus.Zone': zone },
-            { 'ZoneStatus.$.destination': barixId }
-          )
-          .exec()
-        fnSendSocket('deviceAll', {})
+        idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
+        ZoneStatus = qsys.arr[idx].ZoneStatus
+        fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
         break
       case 4004:
         break
       default:
         logger.info(`ID evnet ${deviceId}, ${obj}, ${arr}`)
         if (Object.keys(result).includes('PageID')) {
-          dbQsys
-            .updateOne(
-              { deviceId, 'PageStatus.idx': id },
-              { 'PageStatus.$.PageID': result.PageID }
-            )
-            .exec()
-          dbPage
-            .updateOne(
-              { 'idx': id, 'devices.deviceId': deviceId },
-              { 'devices.$.PageID': result.PageID }
-            )
-            .exec()
+          fnSendSocket('page:pageId', {
+            deviceId,
+            idx: id,
+            PageID: result.PageID
+          })
+          // dbQsys
+          //   .updateOne(
+          //     { deviceId, 'PageStatus.idx': id },
+          //     { 'PageStatus.$.PageID': result.PageID }
+          //   )
+          //   .exec()
+          // dbPage
+          //   .updateOne(
+          //     { 'idx': id, 'devices.deviceId': deviceId },
+          //     { 'devices.$.PageID': result.PageID }
+          //   )
+          //   .exec()
         }
         break
     }

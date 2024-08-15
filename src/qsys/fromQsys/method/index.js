@@ -36,52 +36,55 @@ module.exports = function parser(deviceId, obj) {
           (item) => item.Zone === params.Zone
         )
         if (zoneIdx !== -1) {
-          Object.assign(ZoneStatus[zoneIdx], params)
+          ZoneStatus[zoneIdx] = { ...ZoneStatus[zoneIdx], ...params }
         } else {
           ZoneStatus.push(params)
         }
         return true
       case 'PA.PageStatus':
-        const { State, PageID } = params
-        if (State === 'done') {
-          // 해당 페이지 찾기
-          dbPage
-            .findOne({ devices: { $elemMatch: { deviceId, PageID } } })
-            .then(async (res) => {
-              const current =
-                res.devices[
-                  res.devices.findIndex((e) => e.deviceId === deviceId)
-                ]
-              // 1초후에 릴레이 끄기
-              setTimeout(async () => {
-                await fnAmxRelayOff(current)
-                await fnBarixRelayOff(current)
-              }, 1000)
+        fnSendSocket('page:status', { deviceId, ...params })
 
-              // 방송 종료 로그
-              logEvent(
-                `방송 종료: ${res.name ?? ''} ${current.name ?? ''} idx: ${res.idx ?? ''} -PAGEID: ${PageID ?? ''}`,
-                res.user,
-                [current.name]
-              )
-              dbQsys.updateOne(
-                { deviceId },
-                { $pull: { PageStatus: { PageID } } }
-              )
-              fnSendSocket('page:message', {
-                deviceId,
-                message: '방송 종료'
-              })
-            })
-        }
-        // 종료가 아니면 DB에 저장
-        dbQsys
-          .updateOne(
-            { deviceId, 'PageStatus.PageID': PageID },
-            { 'PageStatus.$': { ...params } }
-          )
-          .exec()
-        break
+      // const { State, PageID } = params
+      // console.log(params)
+      // if (State === 'done') {
+      //   // 해당 페이지 찾기
+      //   dbPage
+      //     .findOne({ devices: { $elemMatch: { deviceId, PageID } } })
+      //     .then(async (res) => {
+      //       const current =
+      //         res.devices[
+      //           res.devices.findIndex((e) => e.deviceId === deviceId)
+      //         ]
+      //       // 1초후에 릴레이 끄기
+      //       setTimeout(async () => {
+      //         await fnAmxRelayOff(current)
+      //         await fnBarixRelayOff(current)
+      //       }, 1000)
+
+      //       // 방송 종료 로그
+      //       logEvent(
+      //         `방송 종료: ${res.name ?? ''} ${current.name ?? ''} idx: ${res.idx ?? ''} -PAGEID: ${PageID ?? ''}`,
+      //         res.user,
+      //         [current.name]
+      //       )
+      //       dbQsys.updateOne(
+      //         { deviceId },
+      //         { $pull: { PageStatus: { PageID } } }
+      //       )
+      //       fnSendSocket('page:message', {
+      //         deviceId,
+      //         message: '방송 종료'
+      //       })
+      //     })
+      // }
+      // // 종료가 아니면 DB에 저장
+      // dbQsys
+      //   .updateOne(
+      //     { deviceId, 'PageStatus.PageID': PageID },
+      //     { 'PageStatus.$': { ...params } }
+      //   )
+      //   .exec()
+      // break
       default:
         // console.log('byMethod', deviceId, obj)
         break
