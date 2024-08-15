@@ -9,8 +9,6 @@ const { logEvent } = require('@api/logs')
 const { fnSendSocket } = require('@api/socket')
 const { fnAmxRelayOff } = require('@api/amx')
 const { fnBarixRelayOff } = require('@api/barix')
-
-const { fnSendMulticast } = require('@multicast')
 const { fnGetVolumeMutes } = require('@qsys/toQsys')
 
 module.exports = function parser(deviceId, obj) {
@@ -70,7 +68,7 @@ module.exports = function parser(deviceId, obj) {
                 { deviceId },
                 { $pull: { PageStatus: { PageID } } }
               )
-              fnSendMulticast('page:message', {
+              fnSendSocket('page:message', {
                 deviceId,
                 message: '방송 종료'
               })

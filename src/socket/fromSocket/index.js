@@ -24,7 +24,7 @@ const {
 } = require('@qsys/broadcast')
 
 const socketParser = (socket) => {
-  // socket.on('qsys:devices', (arr) => fnAQs(arr))
+  socket.on('qsys:devices', (arr) => fnAQs(arr))
   socket.on('qsys:volume', (obj) =>
     fnSetVolume(obj.deviceId, obj.zone, obj.value)
   )

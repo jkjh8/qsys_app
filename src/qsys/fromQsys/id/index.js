@@ -5,7 +5,6 @@ const dbBarix = require('@db/models/barix')
 const logger = require('@logger')
 const { fnSendSocket } = require('@api/socket')
 const { fnSetTransmitter, fnGetTransmitter } = require('@qsys/toQsys')
-const { fnSendMulticast, fnSendMulticastZoneStatus } = require('@multicast')
 
 module.exports = async function parser(deviceId, obj, arr) {
   try {
@@ -52,13 +51,12 @@ module.exports = async function parser(deviceId, obj, arr) {
             ZoneStatus[idx].mute = val.Value
           }
         }
-        // db update & send multicast
-        // fnSendMulticastZoneStatus(deviceId, ZoneStatus)
+        // db update & send socket
         break
       case 3003:
       case 3004:
       case 4001:
-        fnSendMulticast('deviceAll', {})
+        fnSendSocket('deviceAll', {})
         break
       case 4002:
         const zone = result.Name.replace(/[^0-9]/g, '')
@@ -76,7 +74,7 @@ module.exports = async function parser(deviceId, obj, arr) {
             { 'ZoneStatus.$.destination': barixId }
           )
           .exec()
-        fnSendMulticast('deviceAll', {})
+        fnSendSocket('deviceAll', {})
         break
       case 4004:
         break

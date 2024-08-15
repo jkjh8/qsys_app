@@ -1,9 +1,8 @@
 const logger = require('@logger')
 const qsys = require('@qsys')
 const dbQsys = require('@db/models/qsys')
-// const { fnSendSocket } = require('@api/socket')
+const { fnSendSocket } = require('@api/socket')
 const { fnGetVolumeMutes, fnGetTransmitters } = require('@qsys/toQsys')
-const { fnSendMulticastZoneStatus } = require('@multicast')
 
 module.exports = function parser(deviceId, arr) {
   let statusData = false
@@ -32,7 +31,7 @@ module.exports = function parser(deviceId, arr) {
       //   consoel.log('get volume mutes')
       //   return fnGetVolumeMutes(deviceId)
       // }
-      fnSendMulticastZoneStatus(deviceId, ZoneStatus)
+      fnSendSocket('ZoneStatus', ZoneStatus)
     }
   }
 }

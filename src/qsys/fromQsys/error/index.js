@@ -1,6 +1,6 @@
 const logger = require('@logger')
 const { logError } = require('@api/logs')
-// const { fnSendSocket } = require('@api/socket')
+const { fnSendSocket } = require('@api/socket')
 
 module.exports = (deviceId, obj) => {
   switch (obj.id) {

@@ -5,7 +5,6 @@ const dbBarix = require('@db/models/barix')
 const Qrc = require('../qrc')
 const { fnSendSocket } = require('@api/socket')
 const { fnSetPaFeedback } = require('@qsys/toQsys')
-const { fnSendMulticast } = require('@multicast')
 
 const fnGetQsysFromDB = async () => {
   dbQsys
@@ -59,11 +58,9 @@ const fnAQ = async (device) => {
           // db에 업데이트
           dbQsys.updateOne({ deviceId }, { connected: true }).exec()
           fnSetPaFeedback(deviceId)
-          // send multicast
-          fnSendMulticast('connect', { deviceId, name, ipaddress })
+          // send socket
+          fnSendSocket('connect', { deviceId, name, ipaddress })
           // 볼륨 뮤트 수집
-          // fnGetVolumeMutes(deviceId)
-          // fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
           logger.info(`Qsys ${name} ${ipaddress} connected`)
         } else {
           logger.warn(`Qsys connect: ${deviceId} does not exist`)
@@ -81,7 +78,7 @@ const fnAQ = async (device) => {
         if (idx !== -1) {
           if (qsys.arr[idx].connected) {
             dbQsys.updateOne({ deviceId }, { connected: false }).exec()
-            fnSendMulticast('disconnect', { deviceId, name, ipaddress })
+            fnSendSocket('disconnect', { deviceId, name, ipaddress })
             logger.info(`Qsys ${name} ${ipaddress} disconnected`)
           }
           qsys.arr[idx].connected = false

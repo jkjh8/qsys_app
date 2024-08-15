@@ -30,7 +30,6 @@
     "@qsys": "src/qsys",
     "@socket": "src/socket",
     "@app": "src/app",
-    "@db": "src/db",
-    "@multicast": "src/multicast"
+    "@db": "src/db"
   }
 }

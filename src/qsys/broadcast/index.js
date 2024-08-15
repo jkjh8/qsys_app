@@ -17,6 +17,7 @@ const fnSetLive = (arr) => {
 
 const fnSetMuteessage = (arr) => {
   try {
+    console.log('start message')
     arr.forEach((item) => {
       const { idx, deviceId, params } = item
       fnSetPaFeedback(deviceId, false)
