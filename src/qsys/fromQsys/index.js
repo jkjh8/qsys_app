@@ -31,7 +31,7 @@ module.exports = function parser(deviceId, arr) {
       //   consoel.log('get volume mutes')
       //   return fnGetVolumeMutes(deviceId)
       // }
-      fnSendSocket('ZoneStatus', ZoneStatus)
+      fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
     }
   }
 }

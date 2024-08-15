@@ -36,22 +36,30 @@ module.exports = async function parser(deviceId, obj, arr) {
         break
       case 3001:
         const vols = result.Controls
-        const idx = qsys.arr.findIndex((item) => item.deviceId === deviceId)
-        const ZoneStatus = qsys.arr[idx].ZoneStatus
+        dbQsys
+          .findOne({ deviceId })
+          .populate(
+            'ZoneStatus.destination',
+            'name idx deviceId ipaddress status streamurl'
+          )
+          .then((res) => {
+            const ZoneStatus = res.ZoneStatus
+            for (let val of vols) {
+              const channel = Number(val.Name.replace(/[^0-9]/g, ''))
+              const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
 
-        for (let val of vols) {
-          const channel = Number(val.Name.replace(/[^0-9]/g, ''))
-          const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
+              if (val.Name.includes('gain')) {
+                ZoneStatus[idx].gain = val.Value
+              }
 
-          if (val.Name.includes('gain')) {
-            ZoneStatus[idx].gain = val.Value
-          }
-
-          if (val.Name.includes('mute')) {
-            ZoneStatus[idx].mute = val.Value
-          }
-        }
-        // db update & send socket
+              if (val.Name.includes('mute')) {
+                ZoneStatus[idx].mute = val.Value
+              }
+            }
+            // db update & send socket
+            // console.log('ZoneStatus', { deviceId, ZoneStatus })
+            fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
+          })
         break
       case 3003:
       case 3004:

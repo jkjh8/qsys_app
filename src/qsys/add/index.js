@@ -59,7 +59,7 @@ const fnAQ = async (device) => {
           dbQsys.updateOne({ deviceId }, { connected: true }).exec()
           fnSetPaFeedback(deviceId)
           // send socket
-          fnSendSocket('connect', { deviceId, name, ipaddress })
+          fnSendSocket('qsys:connect', { deviceId, name, ipaddress })
           // 볼륨 뮤트 수집
           logger.info(`Qsys ${name} ${ipaddress} connected`)
         } else {
@@ -78,7 +78,7 @@ const fnAQ = async (device) => {
         if (idx !== -1) {
           if (qsys.arr[idx].connected) {
             dbQsys.updateOne({ deviceId }, { connected: false }).exec()
-            fnSendSocket('disconnect', { deviceId, name, ipaddress })
+            fnSendSocket('qsys:disconnect', { deviceId, name, ipaddress })
             logger.info(`Qsys ${name} ${ipaddress} disconnected`)
           }
           qsys.arr[idx].connected = false
