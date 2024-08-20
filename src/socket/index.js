@@ -1,16 +1,12 @@
 const { io } = require('socket.io-client')
 const logger = require('@logger')
 const { socketParser } = require('./fromSocket')
+const { transports } = require('winston')
 
 exports.connectIO = () => {
   const socket = io.connect('http://127.0.0.1:3000/qsys', {
-    // secure: true,
-    withCredentials: true,
-    rejectUnauthorized: false,
-    autoConnect: true,
-    extraHeaders: {
-      auth: 'qsys'
-    }
+    transports: ['websocket'],
+    autoConnect: true
   })
 
   socket.on('connect', () => {
