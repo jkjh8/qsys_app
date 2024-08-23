@@ -36,6 +36,12 @@ const socketParser = (socket) => {
       logger.error(`Qsys devices error: ${error}`)
     }
   })
+  socket.on('qsys:device', (obj) => {
+    const idx = qsys.arr.findIndex((item) => item.deviceId === obj.deviceId)
+    if (idx !== -1) {
+      qsys.arr[idx] = obj
+    }
+  })
   socket.on('qsys:volume', (obj) =>
     fnSetVolume(obj.deviceId, obj.zone, obj.value)
   )
@@ -69,7 +75,8 @@ const socketParser = (socket) => {
     fnSetTransmitters(deviceId)
   })
   socket.on('zone:get:active', (deviceId) => {
-    fnSetPaFeedback(deviceId, true)
+    fnSetPaFeedback(deviceId, false)
+    setTimeout(() => fnSetPaFeedback(deviceId, true), 500)
   })
 }
 

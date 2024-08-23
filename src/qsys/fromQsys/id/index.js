@@ -39,6 +39,7 @@ module.exports = async function parser(deviceId, obj, arr) {
         for (let val of volumeMute) {
           const channel = Number(val.Name.replace(/[^0-9]/g, ''))
           const idx = ZoneStatus.findIndex((item) => item.Zone === channel)
+          if (idx === -1) return
 
           if (val.Name.includes('gain')) {
             ZoneStatus[idx].gain = val.Value

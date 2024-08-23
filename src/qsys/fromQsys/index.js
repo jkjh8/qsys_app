@@ -1,11 +1,8 @@
-const logger = require('@logger')
 const qsys = require('@qsys')
-const dbQsys = require('@db/models/qsys')
 const { fnSendSocket } = require('@api/socket')
-const { fnGetVolumeMutes, fnGetTransmitters } = require('@qsys/toQsys')
 
 module.exports = function parser(deviceId, arr) {
-  let statusData = false
+  let statusData = 0
 
   // console.log('fromQsys', deviceId, arr)
   for (let obj of arr) {
@@ -16,7 +13,10 @@ module.exports = function parser(deviceId, arr) {
 
     // method
     if (Object.keys(obj).includes('method')) {
-      statusData = require('./method')(deviceId, obj)
+      let result = require('./method')(deviceId, obj)
+      if (result) {
+        statusData += 1
+      }
     }
 
     // id
@@ -26,13 +26,10 @@ module.exports = function parser(deviceId, arr) {
   }
   if (statusData) {
     const ZoneStatus = qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus
-    fnSendSocket('ZoneStatus', { deviceId, ZoneStatus })
-    // if (ZoneStatus && ZoneStatus.length) {
-    //   const hasGain = ZoneStatus.some((item) => item.hasOwnProperty('gain'))
-    //   if (!hasGain) {
-    //     console.log('get volume mutes')
-    //     return fnGetVolumeMutes(deviceId)
-    //   }
-    // }
+    fnSendSocket('ZoneStatus', {
+      deviceId,
+      ZoneStatus: ZoneStatus.slice(0, statusData)
+    })
+    statusData = 0
   }
 }

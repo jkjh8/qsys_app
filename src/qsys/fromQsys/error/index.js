@@ -9,8 +9,8 @@ module.exports = (deviceId, obj) => {
       //
       break
     default:
-      logError(`디바이스 오류 ${deviceId} ${obj}`, 'QSYS')
+      logError(`디바이스 오류 ${deviceId} - ${JSON.stringify(obj)}`, 'Q-SYS')
       break
   }
-  logError(`디바이스 오류 ${deviceId} ${obj}`, 'QSYS')
+  logError(`디바이스 오류 ${deviceId} - ${JSON.stringify(obj)}`, 'Q-SYS')
 }

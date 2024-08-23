@@ -1,5 +1,6 @@
 const qsys = require('..')
 const logger = require('@logger')
+const dbQsys = require('@db/models/qsys')
 
 const fnGetQsysStatus = (deviceId) => {
   try {
@@ -57,10 +58,10 @@ const fnSetVolumeMutes = async (deviceId) => {
 }
 
 // 디바이스 전체 볼륨 뮤트 가져오기
-const fnGetVolumeMutes = (deviceId) => {
+const fnGetVolumeMutes = async (deviceId) => {
   try {
     const Controls = []
-    const current = qsys.arr[qsys.arr.findIndex((e) => e.deviceId === deviceId)]
+    const current = await dbQsys.findOne({ deviceId })
     if (current && current.ZoneStatus) {
       for (let zone of current.ZoneStatus) {
         Controls.push({ Name: `zone.${zone.Zone}.gain` })
@@ -152,11 +153,11 @@ const fnSetTransmitter = (args) => {
   }
 }
 
-const fnSetTransmitters = (deviceId) => {
+const fnSetTransmitters = async (deviceId) => {
   try {
-    const ZoneStatus =
-      qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
-    // console.log(ZoneStatus)
+    const device = await dbQsys.findOne({ deviceId })
+    const ZoneStatus = device.ZoneStatus
+    console.log(ZoneStatus)
     ZoneStatus.forEach((item) => {
       const ipaddress = item.destination?.ipaddress || ''
       const port = item.destination?.port || 3030
@@ -182,10 +183,10 @@ const fnGetTransmitter = (deviceId, zone) => {
   }
 }
 
-const fnGetTransmitters = (deviceId) => {
+const fnGetTransmitters = async (deviceId) => {
   try {
-    const ZoneStatus =
-      qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus || []
+    const device = await dbQsys.findOne({ deviceId })
+    const ZoneStatus = device.ZoneStatus
     ZoneStatus.forEach((item) => {
       fnGetTransmitter(deviceId, item.Zone)
     })
