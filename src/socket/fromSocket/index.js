@@ -17,7 +17,7 @@ const {
 
 const {
   fnSetLive,
-  fnSetMuteessage,
+  fnSetMessage,
   fnPageStop,
   fnPageSingleStop,
   fnPageCancel
@@ -51,7 +51,7 @@ const socketParser = (socket) => {
   socket.on('qsys:device:str', (obj) => fnSetTransmitter(obj))
   socket.on('qsys:page:cancelAll', (deviceId) => fnPaCancelAll(deviceId))
   socket.on('qsys:page:live', (arr) => fnSetLive(arr))
-  socket.on('qsys:page:message', (arr) => fnSetMuteessage(arr))
+  socket.on('qsys:page:message', (arr) => fnSetMessage(arr))
   socket.on('qsys:page:stop', (arr) => fnPageStop(arr))
   socket.on('qsys:page:sstop', (obj) => fnPageSingleStop(obj))
   socket.on('qsys:page:cancel', (obj) => fnPageCancel(obj))

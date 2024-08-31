@@ -15,7 +15,7 @@ const fnSetLive = (arr) => {
   })
 }
 
-const fnSetMuteessage = (arr) => {
+const fnSetMessage = (arr) => {
   try {
     arr.forEach((item) => {
       const { idx, deviceId, params } = item
@@ -28,7 +28,7 @@ const fnSetMuteessage = (arr) => {
       fnSetPaFeedback(deviceId, true)
     })
   } catch (error) {
-    logger.error('fnSetMuteessage', error)
+    logger.error('fnSetMessage', error)
   }
 }
 
@@ -70,15 +70,7 @@ const fnPageCancel = (obj) => {
 module.exports = {
   fnSetLive,
   fnPageStop,
-  fnSetMuteessage,
-  fnPageCancel,
-  fnPageSingleStop
-}
-
-module.exports = {
-  fnSetLive,
-  fnPageStop,
-  fnSetMuteessage,
+  fnSetMessage,
   fnPageCancel,
   fnPageSingleStop
 }

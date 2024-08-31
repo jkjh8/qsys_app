@@ -2,7 +2,7 @@ const qsys = require('@qsys')
 const { fnSendSocket } = require('@api/socket')
 
 module.exports = function parser(deviceId, arr) {
-  let statusData = 0
+  let statusData = false
 
   // console.log('fromQsys', deviceId, arr)
   for (let obj of arr) {
@@ -13,10 +13,7 @@ module.exports = function parser(deviceId, arr) {
 
     // method
     if (Object.keys(obj).includes('method')) {
-      let result = require('./method')(deviceId, obj)
-      if (result) {
-        statusData += 1
-      }
+      statusData = require('./method')(deviceId, obj)
     }
 
     // id
@@ -28,8 +25,8 @@ module.exports = function parser(deviceId, arr) {
     const ZoneStatus = qsys.arr.find((e) => e.deviceId === deviceId)?.ZoneStatus
     fnSendSocket('ZoneStatus', {
       deviceId,
-      ZoneStatus: ZoneStatus.slice(0, statusData)
+      ZoneStatus: ZoneStatus
     })
-    statusData = 0
+    statusData = false
   }
 }
