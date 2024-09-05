@@ -2,6 +2,23 @@ const qsys = require('..')
 const logger = require('@logger')
 const { fnSetPaFeedback } = require('../toQsys')
 
+const fnSetPage = (arr) => {
+  try {
+    arr.forEach((item) => {
+      const { idx, deviceId, params } = item
+      fnSetPaFeedback(deviceId, false)
+      qsys.obj[deviceId].addCommand({
+        id: idx,
+        method: 'PA.PageSubmit',
+        params: { ...params }
+      })
+      fnSetPaFeedback(deviceId, true)
+    })
+  } catch (error) {
+    logger.error('fnSetPage', error)
+  }
+}
+
 const fnSetLive = (arr) => {
   arr.forEach((item) => {
     const { idx, deviceId, params } = item
@@ -68,6 +85,7 @@ const fnPageCancel = (obj) => {
 }
 
 module.exports = {
+  fnSetPage,
   fnSetLive,
   fnPageStop,
   fnSetMessage,

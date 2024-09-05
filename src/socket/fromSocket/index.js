@@ -16,6 +16,7 @@ const {
 } = require('@qsys/toQsys')
 
 const {
+  fnSetPage,
   fnSetLive,
   fnSetMessage,
   fnPageStop,
@@ -52,6 +53,7 @@ const socketParser = (socket) => {
   socket.on('qsys:page:cancelAll', (deviceId) => fnPaCancelAll(deviceId))
   socket.on('qsys:page:live', (arr) => fnSetLive(arr))
   socket.on('qsys:page:message', (arr) => fnSetMessage(arr))
+  socket.on('qsys:page', (arr) => fnSetPage(arr))
   socket.on('qsys:page:stop', (arr) => fnPageStop(arr))
   socket.on('qsys:page:sstop', (obj) => fnPageSingleStop(obj))
   socket.on('qsys:page:cancel', (obj) => fnPageCancel(obj))
