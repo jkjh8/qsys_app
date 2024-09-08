@@ -144,7 +144,8 @@ const fnSetTransmitter = (args) => {
         Controls: [
           { Name: 'host', Value: ipaddress },
           { Name: 'port', Value: port },
-          { Name: 'format', Value: 'PCM' }
+          { Name: 'format', Value: 'MP3' },
+          { Name: 'data.rate', Value: '320kbit/s' }
         ]
       }
     })
@@ -155,9 +156,10 @@ const fnSetTransmitter = (args) => {
 
 const fnSetTransmitters = async (deviceId) => {
   try {
-    const device = await dbQsys.findOne({ deviceId })
+    const device = await dbQsys
+      .findOne({ deviceId })
+      .populate('ZoneStatus.destination', 'ipaddress port')
     const ZoneStatus = device.ZoneStatus
-    console.log(ZoneStatus)
     ZoneStatus.forEach((item) => {
       const ipaddress = item.destination?.ipaddress || ''
       const port = item.destination?.port || 3030
