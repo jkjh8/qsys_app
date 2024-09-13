@@ -145,7 +145,7 @@ const fnSetTransmitter = (args) => {
           { Name: 'host', Value: ipaddress },
           { Name: 'port', Value: port },
           { Name: 'format', Value: 'MP3' },
-          { Name: 'data.rate', Value: '320kbit/s' }
+          { Name: 'data.rate', Value: '192kbit/s' }
         ]
       }
     })
